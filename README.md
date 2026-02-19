@@ -1,73 +1,66 @@
-# Welcome to your Lovable project
+## App Summary
+Compostly is a compost pickup service that helps individuals compost more easily and consistently. In areas where municipalities do not offer compost collection—or for those who prefer a simpler option—users can schedule regular bucket pickups through Compostly and receive rebates for their participation.
 
-## Project info
+## Tech Stack (PERN stack)
+Frontend:
+- React
+- TypeScript
+- Vite
+- Tailwind CSS
+- shadcn-ui
 
-**URL**: https://lovable.dev/projects/ad220571-16da-4e9b-b25f-f809e16f6bcf
+Backend:
+- Node.js (v. 18+)
+- Express
+- PostgreSQL
 
-## How can I edit this code?
+## Architecture Diagram
 
-There are several ways of editing your application.
+#TODO
 
-**Use Lovable**
+## Prerequisites
+To run this project locally, you need:
+- Node.js
+- npm (comes with Node)
+- Git (to clone the repository)
+- A modern web browser (Chrome, Edge, Safari, etc.)
+- PostgreSQL installed and running
+- Created database called 'compostly'
+- Database credentials configured in the .env file.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+## Installation and Setup
+Step 1: Clone the repository
+   
+```
+    git clone <https://github.com/ethanhousley1/compostly-home-hub.git>
 ```
 
-**Edit a file directly in GitHub**
+Step 2: Navigate into the project directory
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+    cd compostly-home-hub
+```
 
-**Use GitHub Codespaces**
+Step 3: Install dependencies
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+    npm install
+```
 
-## What technologies are used for this project?
+Step 4: 
+- Add required environment variables in the .env file to match database setup in PostgreSQL (e.g. database password).
 
-This project is built with:
+## Running the Application
+Step 1: 
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Within the program folder, start up the application server using Node.js by entering the following into the terminal:
 
-## How can I deploy this project?
+```
+    npm run dev
+```
+Step 2:
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Navigate to your web browser of choice, and type in: localhost:8080. Compostly should now appear.
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+## Verifying the Vertical Slice
+After the application is running, you'll choose the 'Sign Up' button, and register for an account. After completing that, you should be able to log in with your Compostly account.
