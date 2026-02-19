@@ -8,16 +8,51 @@ import { useAuth } from "@/context/AuthContext";
 const SignUp = () => {
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "", confirm: "" });
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { signup } = useAuth();
   const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     if (form.password.length < 6) { setError("Password must be at least 6 characters."); return; }
     if (form.password !== form.confirm) { setError("Passwords do not match."); return; }
-    signup(form);
-    navigate("/signup-complete");
+
+    setIsSubmitting(true);
+    try {
+      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+      const response = await fetch(`${apiBaseUrl}/api/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName: form.firstName,
+          lastName: form.lastName,
+          email: form.email,
+          password: form.password,
+        }),
+      });
+
+      if (!response.ok) {
+        let message = "Unable to create account right now.";
+        try {
+          const data = await response.json();
+          if (data?.message && typeof data.message === "string") {
+            message = data.message;
+          }
+        } catch {
+          // Ignore invalid JSON responses and use fallback message.
+        }
+        throw new Error(message);
+      }
+
+      signup(form);
+      navigate("/signup-complete");
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
+      setError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -33,7 +68,9 @@ const SignUp = () => {
           <div><Label htmlFor="password">Password</Label><Input id="password" type="password" required value={form.password} onChange={e => setForm({...form, password: e.target.value})} /></div>
           <div><Label htmlFor="confirm">Confirm Password</Label><Input id="confirm" type="password" required value={form.confirm} onChange={e => setForm({...form, confirm: e.target.value})} /></div>
           {error && <p className="text-sm text-destructive">{error}</p>}
-          <Button type="submit" className="w-full">Create Account</Button>
+          <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {isSubmitting ? "Creating Account..." : "Create Account"}
+          </Button>
         </form>
       </div>
     </div>
