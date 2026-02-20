@@ -45,8 +45,21 @@ const SignUp = () => {
         throw new Error(message);
       }
 
-      signup(form);
-      navigate("/signup-complete");
+      const data = await response.json();
+      const user = data?.user;
+
+      if (user) {
+        signup({
+          firstName: user.first_name,
+          lastName: user.last_name,
+          email: user.email,
+          password: form.password,
+        });
+        navigate("/signup-complete", { state: { user } });
+      } else {
+        signup(form);
+        navigate("/signup-complete");
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
       setError(message);

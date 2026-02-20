@@ -41,26 +41,31 @@ Step 2: Navigate into the project directory
     cd compostly-home-hub
 ```
 
-Step 3: Install dependencies
+Step 3: Install frontend dependencies
 
 ```
     npm install
 ```
 
-Step 4: 
-- Add required environment variables in the .env file to match database setup in PostgreSQL (e.g. database password).
+Step 4: Create the database and load schema/seed (PostgreSQL must be running)
+- Create a database named `compostly` (e.g. `createdb compostly`).
+- Run the schema: `psql -d compostly -f db/schema.sql`
+- Run the seed: `psql -d compostly -f db/seed.sql`
+
+Step 5: Environment
+- In the project root, copy `.env.example` to `.env`: `cp .env.example .env`
+- Edit `.env` and set `PGPASSWORD` (and other DB settings if needed). The server reads this file from the root.
+
+Step 6: Backend setup
+- Navigate to the server: `cd server`
+- Install backend dependencies: `npm install`
 
 ## Running the Application
-Step 1: 
+1. **Start the backend** (in one terminal): `cd server` then `npm run dev`. The API runs at http://localhost:3000.
+2. **Start the frontend** (in another terminal, from project root): `npm run dev`. Open http://localhost:8080 (or the port Vite shows) in your browser.
 
-Within the program folder, start up the application server using Node.js by entering the following into the terminal:
-
-```
-    npm run dev
-```
-Step 2:
-
-Navigate to your web browser of choice, and type in: localhost:8080. Compostly should now appear.
-
-## Verifying the Vertical Slice
-After the application is running, you'll choose the 'Sign Up' button, and register for an account. After completing that, you should be able to log in with your Compostly account.
+## Verifying the Vertical Slice (One Working Button — Sign Up)
+1. **Trigger the feature:** Open the app, go to Sign Up, fill in first name, last name, email, and password (≥6 chars), then click **Create Account**.
+2. **Confirm the UI:** You should be redirected to the thank-you page and see "Welcome, [First Name]! Your account ID is [number]." That text comes from the value the backend returned from the database.
+3. **Confirm the database:** In PostgreSQL run: `psql -d compostly -c "SELECT user_id, first_name, last_name, email FROM user_account ORDER BY user_id DESC LIMIT 1;"` You should see the new row you just created.
+4. **Confirm persistence:** Refresh the page or sign out and sign in. The account still exists; the Create Account button actually updated the database and the UI shows the returned value.
