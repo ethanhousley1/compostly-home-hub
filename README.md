@@ -29,34 +29,23 @@ To run this project locally, you need:
 - Database credentials configured in the .env file.
 
 ## Installation and Setup
+
 Step 1: Clone the repository
    
 ```
     git clone <https://github.com/ethanhousley1/compostly-home-hub.git>
 ```
 
-Step 2: Navigate into the project directory
-
-```
-    cd compostly-home-hub
-```
-
-Step 3: Install frontend dependencies
-
-```
-    npm install
-```
-
-Step 4: Create the database and load schema/seed (PostgreSQL must be running)
+Step 2: Create the database and load schema/seed (PostgreSQL must be running)
 - Create a database named `compostly` (e.g. `createdb compostly`).
 - Run the schema: `psql -d compostly -f db/schema.sql`
 - Run the seed: `psql -d compostly -f db/seed.sql`
 
-Step 5: Environment
+Step 3: Environment
 - In the project root, copy `.env.example` to `.env`: `cp .env.example .env`
 - Edit `.env` and set `PGPASSWORD` (and other DB settings if needed). The server reads this file from the root.
 
-Step 6: Backend setup
+Step 4: Backend setup
 - Navigate to the server: `cd server`
 - Install backend dependencies: `npm install`
 
