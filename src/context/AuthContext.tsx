@@ -1,10 +1,19 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
 
+type User = {
+  id?: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  address: string | null;
+  pickup_or_dropoff: string | null;
+};
+
 interface AuthContextType {
   isLoggedIn: boolean;
-  user: { name: string; email: string } | null;
-  login: (email: string, password: string) => void;
-  signup: (data: { firstName: string; lastName: string; email: string; password: string }) => void;
+  user: User | null;
+  login: (email: string, password: string) => Promise<void>;
+  setAuthenticatedUser: (user: User) => void;
   logout: () => void;
 }
 
@@ -18,15 +27,43 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<{ name: string; email: string } | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
-  const login = useCallback((email: string, _password: string) => {
-    setUser({ name: email.split("@")[0], email });
+  const setAuthenticatedUser = useCallback((user: User) => {
+    setUser(user);
     setIsLoggedIn(true);
   }, []);
 
-  const signup = useCallback((data: { firstName: string; lastName: string; email: string; password: string }) => {
-    setUser({ name: `${data.firstName} ${data.lastName}`, email: data.email });
+  const login = useCallback(async (email: string, password: string) => {
+    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+
+    const response = await fetch(`${apiBaseUrl}/api/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      let message = "Unable to sign in.";
+      try {
+        const data = await response.json();
+        if (typeof data?.message === "string") {
+          message = data.message;
+        }
+      } catch {
+        // ignore bad JSON
+      }
+      throw new Error(message);
+    }
+
+    const data = await response.json();
+    const returnedUser = data?.user;
+
+    if (!returnedUser) {
+      throw new Error("No user returned from server.");
+    }
+
+    setUser(returnedUser);
     setIsLoggedIn(true);
   }, []);
 
@@ -36,7 +73,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, user, login, signup, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, user, login, setAuthenticatedUser, logout }}>
       {children}
     </AuthContext.Provider>
   );

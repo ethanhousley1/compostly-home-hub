@@ -31,8 +31,10 @@ const Profile = () => {
           </div>
           <h1 className="font-display text-2xl font-bold text-center mb-6">My Profile</h1>
           <div className="space-y-4">
-            <div><Label>Name</Label><Input value={user?.name || ""} readOnly /></div>
+            <div><Label>Name</Label><Input value={user?.last_name || ""} readOnly /></div>
             <div><Label>Email</Label><Input value={user?.email || ""} readOnly /></div>
+            <div><Label>Address</Label><Input value={user?.address || ""} readOnly /></div>
+            <div><Label>Method</Label><Input value={user?.pickup_or_dropoff || ""} readOnly /></div>
           </div>
           <h2 className="font-display text-lg font-semibold mt-8 mb-4">Profile Settings</h2>
           <div className="space-y-3">

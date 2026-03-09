@@ -48,4 +48,51 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+router.post("/login", async (req, res) => {
+  const pool = getPool();
+  const { email, password } = req.body || {};
+
+  if (!email?.trim() || !password) {
+    return res.status(400).json({
+      message: "Email and password are required.",
+    });
+  }
+
+  try {
+    const result = await pool.query(
+      `SELECT user_id, first_name, last_name, email, password
+       FROM user_account
+       WHERE email = $1`,
+      [email.trim().toLowerCase()]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ message: "Invalid email or password." });
+    }
+
+    const user = result.rows[0];
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+
+    if (!passwordMatch) {
+      return res.status(401).json({ message: "Invalid email or password." });
+    }
+
+    res.json({
+      user: {
+        user_id: user.user_id,
+        first_name: user.first_name,
+        last_name: user.last_name,
+        email: user.email,
+        address: null,
+        pickup_or_dropoff: null
+      }
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Unable to sign in." });
+  }
+});
+
 export { router as signupRouter };
