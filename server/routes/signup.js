@@ -60,7 +60,7 @@ router.post("/login", async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT user_id, first_name, last_name, email, password
+      `SELECT user_id, first_name, last_name, email, password, address, pickup_or_dropoff
        FROM user_account
        WHERE email = $1`,
       [email.trim().toLowerCase()]
@@ -84,8 +84,8 @@ router.post("/login", async (req, res) => {
         first_name: user.first_name,
         last_name: user.last_name,
         email: user.email,
-        address: null,
-        pickup_or_dropoff: null
+        address: user.address,
+        pickup_or_dropoff: user.pickup_or_dropoff
       }
     });
 

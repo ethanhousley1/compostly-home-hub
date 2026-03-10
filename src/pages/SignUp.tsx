@@ -9,7 +9,7 @@ const SignUp = () => {
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "", confirm: "" });
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { signup } = useAuth();
+  const { setAuthenticatedUser } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,17 +49,11 @@ const SignUp = () => {
       const user = data?.user;
 
       if (user) {
-        signup({
-          firstName: user.first_name,
-          lastName: user.last_name,
-          email: user.email,
-          password: form.password,
-        });
+        setAuthenticatedUser(user);
         navigate("/signup-complete", { state: { user } });
       } else {
-        signup(form);
-        navigate("/signup-complete");
-      }
+  throw new Error("No user returned from server.");
+}
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
       setError(message);
