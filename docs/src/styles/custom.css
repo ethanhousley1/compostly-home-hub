@@ -1,0 +1,314 @@
+/* ============================================================
+   Compostly Ed — Custom Theme
+   Aesthetic: organic editorial — warm paper, forest ink,
+   literary serif meets clean geometric sans.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
+
+/* ── Color tokens ─────────────────────────────────────────── */
+
+/* Dark mode (Starlight default :root) */
+:root[data-theme='dark'],
+::backdrop {
+  /* Accent: muted forest green */
+  --sl-color-accent-low:  hsl(142, 28%, 12%);
+  --sl-color-accent:      hsl(142, 32%, 42%);
+  --sl-color-accent-high: hsl(142, 40%, 68%);
+
+  /* Warm dark gray scale — earthy, not cold */
+  --sl-color-white:  hsl(38, 18%, 88%);
+  --sl-color-gray-1: hsl(36, 14%, 78%);
+  --sl-color-gray-2: hsl(34, 11%, 65%);
+  --sl-color-gray-3: hsl(32,  9%, 48%);
+  --sl-color-gray-4: hsl(30, 10%, 32%);
+  --sl-color-gray-5: hsl(28, 14%, 20%);
+  --sl-color-gray-6: hsl(25, 20%, 13%);
+  --sl-color-black:  hsl(24, 24%,  8%);
+
+  /* Typography */
+  --sl-font: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --sl-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+/* Light mode */
+:root,
+[data-theme='light'] ::backdrop {
+  /* Accent: deep forest green */
+  --sl-color-accent-high: hsl(142, 32%, 20%);
+  --sl-color-accent:      hsl(142, 28%, 30%);
+  --sl-color-accent-low:  hsl(142, 24%, 90%);
+
+  /* Warm cream/linen scale */
+  --sl-color-white:  hsl(30, 12%, 16%);
+  --sl-color-gray-1: hsl(30, 10%, 24%);
+  --sl-color-gray-2: hsl(30,  8%, 36%);
+  --sl-color-gray-3: hsl(30,  8%, 50%);
+  --sl-color-gray-4: hsl(32, 12%, 65%);
+  --sl-color-gray-5: hsl(34, 16%, 80%);
+  --sl-color-gray-6: hsl(38, 22%, 91%);
+  --sl-color-gray-7: hsl(40, 28%, 95%);
+  --sl-color-black:  hsl(42, 32%, 97%);
+}
+
+/* ── Global typography & base ─────────────────────────────── */
+
+:root {
+  --sl-font: 'DM Sans', ui-sans-serif, system-ui, sans-serif;
+  --sl-line-height: 1.75;
+  --sl-line-height-headings: 1.2;
+}
+
+/* Headings: Lora serif */
+.sl-markdown-content h1,
+.sl-markdown-content h2,
+.sl-markdown-content h3,
+.sl-markdown-content h4,
+.sl-markdown-content h5,
+.sl-markdown-content h6 {
+  font-family: 'Lora', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Italic lead paragraph style */
+.sl-markdown-content > p:first-of-type {
+  font-size: 1.0625rem;
+  color: var(--sl-color-gray-2);
+}
+
+/* Better list spacing */
+.sl-markdown-content li {
+  margin-block: 0.3em;
+}
+
+/* Tighten up bold inline */
+.sl-markdown-content strong {
+  font-weight: 600;
+  color: var(--sl-color-white);
+}
+
+:root[data-theme='light'] .sl-markdown-content strong {
+  color: var(--sl-color-gray-1);
+}
+
+/* ── Sidebar refinements ──────────────────────────────────── */
+
+/* Section labels — small caps feel */
+.sidebar-content [data-sl-group-label] > span,
+nav.sidebar [aria-label] {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.55;
+}
+
+/* Sidebar links — slightly tighter */
+.sidebar-content a {
+  font-size: 0.875rem;
+  font-weight: 400;
+}
+
+/* Active sidebar link */
+.sidebar-content a[aria-current='page'] {
+  font-weight: 600;
+  border-left: 2px solid var(--sl-color-accent);
+  padding-left: calc(var(--sl-sidebar-pad-x) - 2px);
+}
+
+/* ── Navbar ───────────────────────────────────────────────── */
+
+.site-title {
+  font-family: 'Lora', Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-size: 1.1rem;
+}
+
+/* ── Page title ───────────────────────────────────────────── */
+
+.page-title,
+h1.page-title {
+  font-family: 'Lora', Georgia, serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+/* ── Hero (splash page) ───────────────────────────────────── */
+
+.hero {
+  padding-block: 4rem 3rem;
+}
+
+.hero > .sl-flex {
+  gap: 1rem;
+}
+
+.hero .tagline {
+  font-family: 'Lora', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(1.25rem, 3vw, 1.75rem);
+  font-weight: 400;
+  line-height: 1.4;
+  max-width: 36ch;
+  color: var(--sl-color-gray-2);
+}
+
+/* Hero title */
+.hero .title {
+  font-family: 'Lora', Georgia, serif;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+/* Hero CTA buttons */
+.hero .action a {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  font-size: 0.9375rem;
+  letter-spacing: 0.01em;
+  border-radius: 4px;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.hero .action a:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+/* ── Content cards (LinkCard / Card) ──────────────────────── */
+
+/* LinkCard grid refinement */
+.sl-link-card {
+  border-radius: 6px;
+  border-width: 1px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.sl-link-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px hsla(0, 0%, 0%, 0.12);
+  border-color: var(--sl-color-accent);
+}
+
+:root[data-theme='light'] .sl-link-card:hover {
+  box-shadow: 0 4px 16px hsla(142, 20%, 20%, 0.10);
+}
+
+.sl-link-card .sl-link-card-title {
+  font-family: 'Lora', Georgia, serif;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+/* ── Tables ───────────────────────────────────────────────── */
+
+.sl-markdown-content table {
+  font-size: 0.875rem;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.sl-markdown-content th {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--sl-color-gray-3);
+  padding: 0.5rem 0.75rem;
+  border-bottom: 2px solid var(--sl-color-gray-5);
+  text-align: left;
+}
+
+.sl-markdown-content td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--sl-color-gray-5);
+  vertical-align: top;
+}
+
+.sl-markdown-content tr:last-child td {
+  border-bottom: none;
+}
+
+/* ── Aside / callout blocks ───────────────────────────────── */
+
+.starlight-aside {
+  border-radius: 4px;
+  border-left-width: 3px;
+}
+
+.starlight-aside .starlight-aside__title {
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ── Code blocks ──────────────────────────────────────────── */
+
+.sl-markdown-content :not(pre) > code {
+  font-size: 0.8125em;
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+}
+
+/* ── Horizontal rules ─────────────────────────────────────── */
+
+.sl-markdown-content hr {
+  border: none;
+  border-top: 1px solid var(--sl-color-gray-5);
+  margin-block: 2rem;
+}
+
+/* ── Right-column TOC ─────────────────────────────────────── */
+
+.right-sidebar-panel .right-sidebar-container summary {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+starlight-toc a {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+/* ── Footer / pagination ──────────────────────────────────── */
+
+.pagination-links a {
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+/* ── Subtle grain texture on light bg ─────────────────────── */
+
+:root[data-theme='light'] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+}
+
+/* ── Smooth page transitions ──────────────────────────────── */
+
+main {
+  animation: sl-fade-in 0.2s ease both;
+}
+
+@keyframes sl-fade-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
