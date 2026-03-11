@@ -16,7 +16,7 @@ const SignUpComplete = () => {
           {user && (
             <>
               {" "}
-              Welcome, {user.first_name}! Your account ID is {user.user_id}.
+              Welcome, {user.first_name}!
             </>
           )}
           {" "}
