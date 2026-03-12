@@ -64,7 +64,7 @@ const SignUp = () => {
         });
         navigate("/signup-complete", { state: { user } });
       } else {
-        navigate("/signup-complete");
+        throw new Error("No user returned from server.");
       }
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
