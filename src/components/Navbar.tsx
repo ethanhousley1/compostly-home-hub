@@ -12,7 +12,7 @@ const Navbar = () => {
 
   const navLinks = [
     { label: "Home", to: "/" },
-    { label: "Sign Up", to: "/signup" },
+    ...(!isLoggedIn ? [{ label: "Sign Up", to: "/signup" }] : []),
     { label: "Dashboard", to: "/dashboard" },
     { label: "About Us", to: "/about" },
     { label: "FAQ", to: "/faq" },
