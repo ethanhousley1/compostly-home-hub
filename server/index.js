@@ -16,9 +16,6 @@ app.use(express.json());
 
 app.use("/api", signupRouter);
 
-// Our docs and educational content
-app.use("/docs", express.static(path.resolve(__dirname, "../docs/dist")));
-
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

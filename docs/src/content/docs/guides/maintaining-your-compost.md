@@ -121,5 +121,5 @@ A cool pile will still compost eventually, just more slowly. That's fine if you'
 
 ## Next steps
 
-- [How to tell when compost is ready — and how to use it](/guides/using-finished-compost/)
-- [Reference glossary of composting terms](/reference/glossary/)
+- [How to tell when compost is ready — and how to use it](/docs/guides/using-finished-compost/)
+- [Reference glossary of composting terms](/docs/reference/glossary/)

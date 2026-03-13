@@ -60,7 +60,7 @@ In practice, most households generate far more greens (kitchen scraps) than brow
 | Weed seed heads | Seeds may survive and sprout in your garden |
 
 :::tip[Using a Compostly bucket?]
-Compostly's industrial processing handles many items that a home bin can't — including small amounts of cooked food, bread, and pasta. Check the [accepted materials list](/getting-started/with-compostly/#whats-accepted-vs-what-isnt) before deciding what goes in the bin vs. the bucket.
+Compostly's industrial processing handles many items that a home bin can't — including small amounts of cooked food, bread, and pasta. Check the [accepted materials list](/docs/getting-started/with-compostly/#whats-accepted-vs-what-isnt) before deciding what goes in the bin vs. the bucket.
 :::
 
 ## Balancing your pile in practice
@@ -82,5 +82,5 @@ Drop certified compostable packaging in your Compostly bucket instead, and we'll
 
 ## Next steps
 
-- [Get your first bin set up at home](/guides/getting-started-at-home/)
-- [Learn how to maintain a healthy pile](/guides/maintaining-your-compost/)
+- [Get your first bin set up at home](/docs/guides/getting-started-at-home/)
+- [Learn how to maintain a healthy pile](/docs/guides/maintaining-your-compost/)

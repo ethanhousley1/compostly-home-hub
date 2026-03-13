@@ -23,7 +23,7 @@ Accepted materials include:
 - Paper napkins and paper towels
 - Yard trimmings and leaves
 
-See the complete list in [What to Compost](/guides/what-to-compost/).
+See the complete list in [What to Compost](/docs/guides/what-to-compost/).
 
 ### 2. Set out your bucket on pickup day
 
@@ -47,7 +47,7 @@ Finished compost is distributed to:
 
 Compostly is a pickup service, not a substitute for understanding composting. Many of our members also maintain a small home bin or worm bin — Compostly handles the overflow and items that don't work well in a home setup.
 
-If you're curious about managing your own pile alongside the service, start with [Getting Started at Home](/guides/getting-started-at-home/).
+If you're curious about managing your own pile alongside the service, start with [Getting Started at Home](/docs/guides/getting-started-at-home/).
 
 ## What's accepted vs. what isn't
 

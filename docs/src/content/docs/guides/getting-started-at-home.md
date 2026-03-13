@@ -118,5 +118,5 @@ Fill the drum about halfway before you start spinning — a tumbler that's too e
 
 ## Next steps
 
-- [What to add and what to avoid](/guides/what-to-compost/)
-- [Keeping your pile healthy — turning, moisture, troubleshooting](/guides/maintaining-your-compost/)
+- [What to add and what to avoid](/docs/guides/what-to-compost/)
+- [Keeping your pile healthy — turning, moisture, troubleshooting](/docs/guides/maintaining-your-compost/)
