@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/lib/supabase";
 
 const SignUp = () => {
   const [form, setForm] = useState({ firstName: "", lastName: "", email: "", password: "", confirm: "", address: "", pickupOrDropoff: "" });
@@ -23,49 +24,41 @@ const SignUp = () => {
 
     setIsSubmitting(true);
     try {
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
-      const response = await fetch(`${apiBaseUrl}/api/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName: form.firstName,
-          lastName: form.lastName,
+      const { data, error: insertError } = await supabase
+        .from("user_account")
+        .insert({
+          first_name: form.firstName,
+          last_name: form.lastName,
           email: form.email,
           password: form.password,
-          address: form.address,
-          pickupOrDropoff: form.pickupOrDropoff,
-        }),
-      });
+          address: form.address || null,
+          pickup_or_dropoff: form.pickupOrDropoff || null,
+        })
+        .select("user_id, first_name, last_name, email, address, pickup_or_dropoff")
+        .single();
 
-      if (!response.ok) {
-        let message = "Unable to create account right now.";
-        try {
-          const data = await response.json();
-          if (data?.message && typeof data.message === "string") {
-            message = data.message;
-          }
-        } catch {
-          // Ignore invalid JSON responses and use fallback message.
+      if (insertError) {
+        if (insertError.code === "23505") {
+          throw new Error("An account with this email already exists.");
         }
-        throw new Error(message);
+        throw new Error(insertError.message);
       }
 
-      const data = await response.json();
-      const user = data?.user;
-
-      if (user) {
-        setAuthenticatedUser({
-          id: user.user_id,
-          first_name: user.first_name,
-          last_name: user.last_name,
-          email: user.email,
-          address: user.address,
-          pickup_or_dropoff: user.pickup_or_dropoff,
-        });
-        navigate("/signup-complete", { state: { user } });
-      } else {
-        throw new Error("No user returned from server.");
+      if (!data) {
+        throw new Error("No user returned from database.");
       }
+
+      const user = {
+        id: data.user_id,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        email: data.email,
+        address: data.address,
+        pickup_or_dropoff: data.pickup_or_dropoff,
+      };
+
+      setAuthenticatedUser(user);
+      navigate("/signup-complete", { state: { user } });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong. Please try again.";
       setError(message);

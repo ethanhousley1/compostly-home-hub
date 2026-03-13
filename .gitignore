@@ -23,3 +23,10 @@ dist-ssr
 *.sln
 *.sw?
 .env
+.env.local
+
+# Bun (project uses npm)
+bun.lockb
+
+# Claude Code
+.claude/

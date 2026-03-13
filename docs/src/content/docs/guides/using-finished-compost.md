@@ -118,5 +118,5 @@ Check the app for availability and pickup or delivery options in your area.
 
 ## Next steps
 
-- [Explore the composting glossary](/reference/glossary/)
-- [Go back to the beginning — what is composting?](/getting-started/what-is-composting/)
+- [Explore the composting glossary](/docs/reference/glossary/)
+- [Go back to the beginning — what is composting?](/docs/)

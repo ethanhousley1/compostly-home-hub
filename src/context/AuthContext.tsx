@@ -1,13 +1,34 @@
 import React, { createContext, useContext, useState, useCallback } from "react";
+import { supabase } from "@/lib/supabase";
 
-type User = {
-  id?: number;
+const SESSION_KEY = "user_account_session";
+
+export type User = {
+  id: number;
   first_name: string;
   last_name: string;
   email: string;
   address: string | null;
   pickup_or_dropoff: string | null;
 };
+
+function loadSession(): User | null {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as User;
+  } catch {
+    return null;
+  }
+}
+
+function saveSession(user: User) {
+  localStorage.setItem(SESSION_KEY, JSON.stringify(user));
+}
+
+function clearSession() {
+  localStorage.removeItem(SESSION_KEY);
+}
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -26,50 +47,47 @@ export const useAuth = () => {
 };
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(loadSession);
+  const [isLoggedIn, setIsLoggedIn] = useState(user !== null);
 
-  const setAuthenticatedUser = useCallback((user: User) => {
-    setUser(user);
+  const setAuthenticatedUser = useCallback((u: User) => {
+    setUser(u);
     setIsLoggedIn(true);
+    saveSession(u);
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+    const { data, error } = await supabase
+      .from("user_account")
+      .select("user_id, first_name, last_name, email, address, pickup_or_dropoff, password")
+      .eq("email", email)
+      .single();
 
-    const response = await fetch(`${apiBaseUrl}/api/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (!response.ok) {
-      let message = "Unable to sign in.";
-      try {
-        const data = await response.json();
-        if (typeof data?.message === "string") {
-          message = data.message;
-        }
-      } catch {
-        // ignore bad JSON
-      }
-      throw new Error(message);
+    if (error || !data) {
+      throw new Error("Invalid email or password.");
     }
 
-    const data = await response.json();
-    const returnedUser = data?.user;
-
-    if (!returnedUser) {
-      throw new Error("No user returned from server.");
+    if (data.password !== password) {
+      throw new Error("Invalid email or password.");
     }
 
-    setUser(returnedUser);
+    const u: User = {
+      id: data.user_id,
+      first_name: data.first_name,
+      last_name: data.last_name,
+      email: data.email,
+      address: data.address,
+      pickup_or_dropoff: data.pickup_or_dropoff,
+    };
+    setUser(u);
     setIsLoggedIn(true);
+    saveSession(u);
   }, []);
 
   const logout = useCallback(() => {
     setUser(null);
     setIsLoggedIn(false);
+    clearSession();
   }, []);
 
   return (

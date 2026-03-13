@@ -86,7 +86,7 @@ Compost produced by worms, specifically red wigglers (*Eisenia fetida*). Worm ca
 ---
 
 **Worm bin**
-A container housing composting worms (typically red wigglers) that process kitchen scraps into vermicompost. Worm bins work well indoors, making them ideal for apartments and small spaces. See [Getting Started at Home](/guides/getting-started-at-home/#worm-bin-vermicomposting) for setup instructions.
+A container housing composting worms (typically red wigglers) that process kitchen scraps into vermicompost. Worm bins work well indoors, making them ideal for apartments and small spaces. See [Getting Started at Home](/docs/guides/getting-started-at-home/#worm-bin-vermicomposting) for setup instructions.
 
 ---
 
