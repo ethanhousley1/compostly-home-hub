@@ -11,8 +11,8 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const navLinks = [
+    ...(!isLoggedIn ? [{ label: "Sign Up", to: "/signup", isCta: true }, { separator: true }] : []),
     { label: "Home", to: "/" },
-    ...(!isLoggedIn ? [{ label: "Sign Up", to: "/signup" }] : []),
     { label: "Dashboard", to: "/dashboard" },
     { label: "About Us", to: "/about" },
     { label: "FAQ", to: "/faq" },
@@ -28,15 +28,23 @@ const Navbar = () => {
 
         {/* Desktop nav */}
         <div className="hidden items-center gap-1 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            >
-              {link.label}
-            </Link>
-          ))}
+          {navLinks.map((item) =>
+            item.separator ? (
+              <span key="sep" className="px-2 text-muted-foreground">|</span>
+            ) : item.isCta ? (
+              <Link key={item.to} to={item.to}>
+                <Button size="sm" className="ml-0">{item.label}</Button>
+              </Link>
+            ) : (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              >
+                {item.label}
+              </Link>
+            )
+          )}
           {isLoggedIn ? (
             <Button
               variant="outline"
@@ -47,8 +55,11 @@ const Navbar = () => {
               Sign Out
             </Button>
           ) : (
-            <Link to="/signin">
-              <Button size="sm" className="ml-2">Sign In</Button>
+            <Link
+              to="/signin"
+              className="ml-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              Sign In
             </Link>
           )}
         </div>
@@ -67,16 +78,22 @@ const Navbar = () => {
       {isOpen && (
         <div className="border-t bg-card md:hidden animate-fade-in">
           <div className="container mx-auto flex flex-col gap-1 px-4 py-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.to}
-                to={link.to}
-                onClick={() => setIsOpen(false)}
-                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {navLinks.filter((item) => !item.separator).map((link) =>
+              link.isCta ? (
+                <Link key={link.to} to={link.to} onClick={() => setIsOpen(false)}>
+                  <Button size="sm" className="w-full">{link.label}</Button>
+                </Link>
+              ) : (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  onClick={() => setIsOpen(false)}
+                  className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                >
+                  {link.label}
+                </Link>
+              )
+            )}
             {isLoggedIn ? (
               <Button
                 variant="outline"
@@ -86,8 +103,12 @@ const Navbar = () => {
                 Sign Out
               </Button>
             ) : (
-              <Link to="/signin" onClick={() => setIsOpen(false)}>
-                <Button size="sm" className="w-full">Sign In</Button>
+              <Link
+                to="/signin"
+                onClick={() => setIsOpen(false)}
+                className="rounded-md px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                Sign In
               </Link>
             )}
           </div>

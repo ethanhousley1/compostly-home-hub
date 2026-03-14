@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 
@@ -80,7 +82,17 @@ const SignUp = () => {
           <div><Label htmlFor="password">Password</Label><Input id="password" type="password" required value={form.password} onChange={e => setForm({...form, password: e.target.value})} /></div>
           <div><Label htmlFor="confirm">Confirm Password</Label><Input id="confirm" type="password" required value={form.confirm} onChange={e => setForm({...form, confirm: e.target.value})} /></div>
           <div>
-            <Label htmlFor="pickupOrDropoff">Service Type</Label>
+            <div className="flex items-center gap-1.5">
+              <Label htmlFor="pickupOrDropoff">Service Type</Label>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-xs">
+                  Choose Pickup if you want us to come pick up your compost weekly, choose dropoff if you want to handle it yourself.
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <Select value={form.pickupOrDropoff} onValueChange={value => setForm({...form, pickupOrDropoff: value, address: value === "Pickup" ? form.address : ""})}>
               <SelectTrigger id="pickupOrDropoff">
                 <SelectValue placeholder="Select pickup or dropoff" />
