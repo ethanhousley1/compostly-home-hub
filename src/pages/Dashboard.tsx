@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, DollarSign, MapPin } from "lucide-react";
+import { Calendar, DollarSign, Link, MapPin } from "lucide-react";
 import CompostMap from "@/components/CompostMap";
+import { Button } from "react-day-picker";
 
 const scheduleData = [
   { day: "Monday", task: "Add greens (fruit/veggie scraps)", done: true },
@@ -31,31 +32,53 @@ const Dashboard = () => {
 
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="mb-6">
-            <TabsTrigger value="schedule" className="gap-2"><Calendar className="h-4 w-4" /> Schedule</TabsTrigger>
-            <TabsTrigger value="finances" className="gap-2"><DollarSign className="h-4 w-4" /> Finances</TabsTrigger>
-            <TabsTrigger value="map" className="gap-2"><MapPin className="h-4 w-4" /> Map</TabsTrigger>
+            <TabsTrigger value="schedule" className="gap-2">
+              <Calendar className="h-4 w-4" /> Schedule
+            </TabsTrigger>
+            <TabsTrigger value="finances" className="gap-2">
+              <DollarSign className="h-4 w-4" /> Finances
+            </TabsTrigger>
+            <TabsTrigger value="map" className="gap-2">
+              <MapPin className="h-4 w-4" /> Map
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="schedule">
             <Card>
-              <CardHeader><CardTitle>Weekly Composting Schedule</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>Weekly Composting Schedule</CardTitle>
+              </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   {scheduleData.map((s) => (
-                    <div key={s.day} className="flex items-center gap-3 rounded-lg border p-3">
-                      <input type="checkbox" defaultChecked={s.done} className="h-4 w-4 accent-primary" />
+                    <div
+                      key={s.day}
+                      className="flex items-center gap-3 rounded-lg border p-3"
+                    >
+                      <input
+                        type="checkbox"
+                        defaultChecked={s.done}
+                        className="h-4 w-4 accent-primary"
+                      />
                       <span className="font-medium min-w-[90px]">{s.day}</span>
-                      <span className="text-sm text-muted-foreground">{s.task}</span>
+                      <span className="text-sm text-muted-foreground">
+                        {s.task}
+                      </span>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
+          <Link to="/pickup">
+            <Button>Pickup Instructions</Button>
+          </Link>
 
           <TabsContent value="finances">
             <Card>
-              <CardHeader><CardTitle>Composting Expenses</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>Composting Expenses</CardTitle>
+              </CardHeader>
               <CardContent>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
@@ -71,14 +94,21 @@ const Dashboard = () => {
                         <tr key={f.item} className="border-b last:border-0">
                           <td className="py-3">{f.item}</td>
                           <td className="py-3">${f.cost.toFixed(2)}</td>
-                          <td className="py-3 text-muted-foreground">{f.date}</td>
+                          <td className="py-3 text-muted-foreground">
+                            {f.date}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                     <tfoot>
                       <tr className="font-semibold">
                         <td className="pt-3">Total</td>
-                        <td className="pt-3">${financeData.reduce((a, b) => a + b.cost, 0).toFixed(2)}</td>
+                        <td className="pt-3">
+                          $
+                          {financeData
+                            .reduce((a, b) => a + b.cost, 0)
+                            .toFixed(2)}
+                        </td>
                         <td />
                       </tr>
                     </tfoot>
@@ -90,7 +120,9 @@ const Dashboard = () => {
 
           <TabsContent value="map">
             <Card>
-              <CardHeader><CardTitle>Community Composting Locations</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>Community Composting Locations</CardTitle>
+              </CardHeader>
               <CardContent>
                 <div className="h-[500px] rounded-lg overflow-hidden">
                   <CompostMap />
