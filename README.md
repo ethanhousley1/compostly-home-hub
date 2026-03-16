@@ -112,3 +112,23 @@ To run the docs locally: `cd docs && npm install && npm run dev`.
 3. **Confirm the database:** In the Supabase dashboard, go to **Authentication → Users** and verify the new user appears with the correct email and metadata (first_name, last_name, etc.).
 4. **Confirm persistence:** Refresh the page — the session should persist via Supabase Auth. Sign out and sign back in to verify login works.
 5. **Confirm network:** In browser DevTools → Network, verify that signup/login requests go to your Supabase URL (`*.supabase.co`), not to `/api/signup`.
+
+## EARS Requirements
+### Complete
+- When a user clicks 'Create Account' with valid details, the system shall create a new user in Supabase and redirect to the thank-you page.
+- While the user is logged in, the system shall persist the session across apge refreshes using Supabase Auth.
+- The system shall support a unified build process that ships the React SPA, Astro docs, and serverless functions from a single Vercel project.
+- The system shall provide a composting education page.
+- The system shall provide an 'About Us' page.
+- The system shall clarify on the Homepage that users are signing up for a subscription service.
+- While a user is signed in, the system shall hide sign-up options from the interface.
+- The system shall only allow users existing in the database to log in.
+- The system shall provide a consistent header with a navigation menu bar across all pages.
+### Not Complete
+- When a user signs up, the system shall gather a specific pick-up/drop-off address.
+- The system shall provide an Admin page for managing service operations.
+- The system shall provide a Profile Details page that allows users to edit their information.
+- When a user accesses the Admin Page, the system shall display a Map Dashboard with live pins representing user addresses.
+- The system shall provide a Finance dashboard to track rebates and payments.
+- Where a user prefers a specific schedule, the system shall allow them to choose when they want their compost waste to be picked up.
+- If the database or authentication service is unavailable, the system shall prevent interactionand notify the user. 
