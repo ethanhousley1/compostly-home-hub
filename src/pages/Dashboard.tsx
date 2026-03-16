@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, DollarSign, Link, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Calendar, DollarSign, MapPin } from "lucide-react";
 import CompostMap from "@/components/CompostMap";
-import { Button } from "react-day-picker";
+import { Button } from "@/components/ui/button";
 
 const scheduleData = [
   { day: "Monday", task: "Add greens (fruit/veggie scraps)", done: true },
@@ -29,7 +30,9 @@ const Dashboard = () => {
     <div className="min-h-screen py-10">
       <div className="container mx-auto px-4">
         <h1 className="font-display text-3xl font-bold mb-6">Dashboard</h1>
-
+        <Link to="/pickup">
+          <Button>Pickup Instructions</Button>
+        </Link>
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="mb-6">
             <TabsTrigger value="schedule" className="gap-2">
