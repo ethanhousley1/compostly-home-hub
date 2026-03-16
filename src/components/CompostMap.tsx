@@ -2,9 +2,7 @@ import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-const locations = [
-  
-];
+const locations = [];
 
 const CompostMap = () => {
   const mapRef = useRef<HTMLDivElement>(null);
@@ -17,7 +15,8 @@ const CompostMap = () => {
     mapInstanceRef.current = map;
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      attribution:
+        '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
     }).addTo(map);
 
     const icon = L.divIcon({
@@ -25,12 +24,6 @@ const CompostMap = () => {
       className: "",
       iconSize: [28, 28],
       iconAnchor: [14, 14],
-    });
-
-    locations.forEach((loc) => {
-      L.marker([loc.lat, loc.lng], { icon })
-        .addTo(map)
-        .bindPopup(`<strong>${loc.name}</strong><br/><span style="color:#666">${loc.desc}</span>`);
     });
 
     return () => {
