@@ -21,7 +21,7 @@ const AboutUs = () => (
             About Compostly
           </h1>
           <p className="mt-4 text-lg text-primary-foreground/80">
-            We're on a mission to hug some trees, probably.
+            We're on a mission to give back to the Earth. 
           </p>
         </div>
       </div>
@@ -84,14 +84,14 @@ const AboutUs = () => (
 
         <div className="grid gap-10 grid-cols-2 md:grid-cols-4 justify-items-center">
           {[
-            { name: "Garrett Nelson", role: "Investor | Advisor | PhD in Investing | PhD in Making Money | Master in Spending Money | Bachelor in Loving Wife | Minor in Loving Goldfish", img: garrettHeadshot },
-            { name: "Logan Reeder", role: "CEO | Co-Founder | PhD in Wife Listening | Master in Wife Finding | Professional Comedian | Minor in Acting Busy" },
-            { name: "Ethan Housley", role: "CTO | Founder | PhD in Looking Busy | Master in Procrastination | Bachelor in Having A Girlfriend and A Wife | Minor in Keeping Secrets" },
-            { name: "Dawson Broadbent", role: "CMO | PhD in Making Things Look Good | Master in Shed Hunting | Bachelor in Dope Kicks | Minor in Looking Over Shoulder When Merging " },
-            { name: "Michael Jones", role: "CFO | PhD in Being Smart | PhD in Merging to Main Without Testing | Minor in It Works on My Machine" },
-            { name: "Garret Safsten", role: "CRO | PhD in Being Another Garrett | PhD in Not Being Garrett Nelson | Bachelor in Taking Credit | Minor in The Heart is A Muscle, Train It Till Failure" },
-            { name: "Joaquin Elizalde ", role: "President | Co-Founder | PhD in Having A Hard Last Name to Pronounce | Master in Having Better Handwriting Than You | Bachelor in Taking Credit" },
-            { name: "Broc Cuartas", role: "Professional Tree Hugger | PhD in Hugging a Tree So Good It Hugs Back | Master in Not Being Married | Bachelor in Still Not Being Married | Minor in Single For Life But Not For Eternity | Minor in Looking Like God Submitted Me at 11:59 PM", img: brocHeadshot },
+            { name: "Garrett Nelson", role: "Investor | Advisor | PhD in Investing |", img: garrettHeadshot },
+            { name: "Logan Reeder", role: "CEO | Co-Founder" },
+            { name: "Ethan Housley", role: "CTO | Founder" },
+            { name: "Dawson Broadbent", role: "CMO" },
+            { name: "Michael Jones", role: "CFO" },
+            { name: "Garret Safsten", role: "CRO" },
+            { name: "Joaquin Elizalde ", role: "President | Co-Founder" },
+            { name: "Broc Cuartas", role: "Investor | Advisor", img: brocHeadshot },
           ].map((member) => (
             <div key={member.name} className="flex flex-col items-center text-center group">
               <div className="w-32 h-32 rounded-full border-4 border-primary/30 bg-card overflow-hidden mb-4 shadow-md transition-transform group-hover:scale-105 group-hover:border-primary/60 flex items-center justify-center">
