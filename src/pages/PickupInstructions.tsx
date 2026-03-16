@@ -106,12 +106,6 @@ const Pickup = () => {
             >
               <Truck className="h-4 w-4" /> Curbside Pickup
             </a>
-            <a
-              href="#drop-off"
-              className="flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold text-primary-foreground hover:bg-primary-foreground/20 transition-colors"
-            >
-              <Navigation className="h-4 w-4" /> Drop-Off
-            </a>
           </div>
         </div>
       </section>
