@@ -7,17 +7,25 @@ import compostlyLogo from "@/assets/compostly-logo.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, user } = useAuth();
   const navigate = useNavigate();
 
-  const navLinks = [
-    { label: "Home", to: "/" },
-    ...(!isLoggedIn ? [{ label: "Sign Up", to: "/signup" }] : []),
-    { label: "Dashboard", to: "/dashboard" },
-    { label: "About Us", to: "/about" },
-    { label: "FAQ", to: "/faq" },
-    ...(isLoggedIn ? [{ label: "Profile", to: "/profile" }] : []),
-  ];
+const isAdmin = isLoggedIn && user?.email?.toLowerCase() === "admin@compostly.com";
+
+const navLinks = [
+  { label: "Home", to: "/" },
+  ...(!isLoggedIn ? [{ label: "Sign Up", to: "/signup" }] : []),
+  { label: "Dashboard", to: "/dashboard" },
+  { label: "About Us", to: "/about" },
+  { label: "FAQ", to: "/faq" },
+  ...(isLoggedIn ? [{ label: "Profile", to: "/profile" }] : []),
+  ...(isAdmin
+    ? [
+        { label: "Users", to: "/users" },
+        { label: "Map", to: "/map" },
+      ]
+    : []),
+];
 
   return (
     <nav className="sticky top-0 z-50 border-b bg-white backdrop-blur-md">

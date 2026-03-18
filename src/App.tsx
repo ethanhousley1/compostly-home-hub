@@ -19,6 +19,9 @@ import WhatToCompost from "./pages/WhatToCompost";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./pages/ScrollToTop";
 import PickupInstructions from "@/pages/PickupInstructions";
+// import AdminRoute from "@/components/AdminRoute";
+// import Users from "./pages/Users";
+// import MapPage from "./pages/MapPage";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +49,22 @@ const App = () => (
                 <Route path="/what-to-compost" element={<WhatToCompost />} />
                 <Route path="*" element={<NotFound />} />
                 <Route path="/pickup" element={<PickupInstructions />} />
+                {/* <Route
+                  path="/users"
+                  element={
+                    <AdminRoute>
+                      <Users />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/map"
+                  element={
+                    <AdminRoute>
+                      <MapPage />
+                    </AdminRoute>
+                  }
+                /> */}
               </Routes>
             </main>
             <Footer />
