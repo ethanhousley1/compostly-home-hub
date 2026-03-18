@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Calendar, DollarSign, MapPin } from "lucide-react";
 import CompostMap from "@/components/CompostMap";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 
 const scheduleData = [
   { day: "Monday", task: "Add greens (fruit/veggie scraps)", done: true },
@@ -25,6 +26,19 @@ const financeData = [
 
 const Dashboard = () => {
   const [tab, setTab] = useState("schedule");
+  const { isLoggedIn } = useAuth();
+
+  if (!isLoggedIn) {
+    return (
+      <div className="flex min-h-[80vh] items-center justify-center px-4">
+        <div className="text-center">
+          <h1 className="font-display text-2xl font-bold mb-3">Please sign in</h1>
+          <p className="text-muted-foreground mb-4">You need to be signed in to view the dashboard.</p>
+          <Link to="/signin"><Button>Sign In</Button></Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen py-10">
