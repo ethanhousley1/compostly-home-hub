@@ -18,6 +18,7 @@ import WhatToCompost from "./pages/WhatToCompost";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./pages/ScrollToTop";
 import PickupInstructions from "@/pages/PickupInstructions";
+import ProtectedRoute from "@/components/ProtectedRoute";
 // import AdminRoute from "@/components/AdminRoute";
 // import Users from "./pages/Users";
 // import MapPage from "./pages/MapPage";
@@ -40,7 +41,7 @@ const App = () => (
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/signup-complete" element={<SignUpComplete />} />
                 <Route path="/signin" element={<SignIn />} />
-                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/about" element={<AboutUs />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/faq" element={<FAQ />} />

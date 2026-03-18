@@ -15,7 +15,7 @@ const isAdmin = isLoggedIn && user?.email?.toLowerCase() === "admin@compostly.co
 const navLinks = [
   { label: "Home", to: "/" },
   ...(!isLoggedIn ? [{ label: "Sign Up", to: "/signup" }] : []),
-  { label: "Dashboard", to: "/dashboard" },
+  ...(isLoggedIn ? [{ label: "Dashboard", to: "/dashboard" }] : []),
   { label: "About Us", to: "/about" },
   { label: "FAQ", to: "/faq" },
   ...(isLoggedIn ? [{ label: "Profile", to: "/profile" }] : []),
