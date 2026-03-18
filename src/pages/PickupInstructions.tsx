@@ -264,12 +264,12 @@ const Pickup = () => {
           </h2>
           <p className="text-center text-muted-foreground mb-10">
             Have a question not answered here?{" "}
-            <Link
-              to="/contact"
+            <a
+              href="mailto:help@compostly.org"
               className="text-primary underline underline-offset-2"
             >
               Reach out
-            </Link>
+            </a>
             .
           </p>
           <FAQAccordion items={faqs} />

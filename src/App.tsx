@@ -14,7 +14,6 @@ import Dashboard from "./pages/Dashboard";
 import AboutUs from "./pages/AboutUs";
 import Profile from "./pages/Profile";
 import FAQ from "./pages/FAQ";
-import Contact from "./pages/Contact";
 import WhatToCompost from "./pages/WhatToCompost";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./pages/ScrollToTop";
@@ -42,7 +41,6 @@ const App = () => (
                 <Route path="/about" element={<AboutUs />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/faq" element={<FAQ />} />
-                <Route path="/contact" element={<Contact />} />
                 <Route path="/what-to-compost" element={<WhatToCompost />} />
                 <Route path="*" element={<NotFound />} />
                 <Route path="/pickup" element={<PickupInstructions />} />

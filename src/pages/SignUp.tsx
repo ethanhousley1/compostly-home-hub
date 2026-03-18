@@ -34,7 +34,7 @@ const SignUp = () => {
           address: form.address || null,
           pickup_or_dropoff: form.pickupOrDropoff || null,
         })
-        .select("user_id, first_name, last_name, email, address, pickup_or_dropoff")
+        .select("user_id, first_name, last_name, email, address, pickup_or_dropoff, email_notifications, weekly_reminders")
         .single();
 
       if (insertError) {
@@ -55,6 +55,8 @@ const SignUp = () => {
         email: data.email,
         address: data.address,
         pickup_or_dropoff: data.pickup_or_dropoff,
+        email_notifications: data.email_notifications ?? true,
+        weekly_reminders: data.weekly_reminders ?? true,
       };
 
       setAuthenticatedUser(user);

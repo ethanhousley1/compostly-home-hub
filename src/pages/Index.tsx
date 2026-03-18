@@ -41,13 +41,6 @@ const Index = () => {
               Transform your kitchen scraps into garden gold. Start composting
               at home today — it's easier than you think.
             </p>
-            <div className="mt-4">
-              <Link to="/contact">
-                <Button size="lg" variant="secondary">
-                  Contact Us
-                </Button>
-              </Link>
-            </div>
           </div>
         </div>
       </section>
