@@ -19,8 +19,8 @@ import NotFound from "./pages/NotFound";
 import ScrollToTop from "./pages/ScrollToTop";
 import PickupInstructions from "@/pages/PickupInstructions";
 import ProtectedRoute from "@/components/ProtectedRoute";
-// import AdminRoute from "@/components/AdminRoute";
-// import Users from "./pages/Users";
+import AdminRoute from "@/components/AdminRoute";
+import Users from "./pages/Users";
 // import MapPage from "./pages/MapPage";
 
 const queryClient = new QueryClient();
@@ -46,9 +46,8 @@ const App = () => (
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/what-to-compost" element={<WhatToCompost />} />
-                <Route path="*" element={<NotFound />} />
                 <Route path="/pickup" element={<PickupInstructions />} />
-                {/* <Route
+                <Route
                   path="/users"
                   element={
                     <AdminRoute>
@@ -56,14 +55,7 @@ const App = () => (
                     </AdminRoute>
                   }
                 />
-                <Route
-                  path="/map"
-                  element={
-                    <AdminRoute>
-                      <MapPage />
-                    </AdminRoute>
-                  }
-                /> */}
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
             <Footer />
