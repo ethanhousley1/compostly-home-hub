@@ -12,7 +12,7 @@ const SignUpComplete = () => {
         <CheckCircle className="mx-auto h-16 w-16 text-primary mb-4" />
         <h1 className="font-display text-3xl font-bold mb-3">Thank you!</h1>
         <p className="text-muted-foreground mb-6">
-          Your Compostly account has been created.
+          Your Compostly account has been created!
           {user && (
             <>
               {" "}
