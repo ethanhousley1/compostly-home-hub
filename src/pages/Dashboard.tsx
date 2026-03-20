@@ -70,7 +70,7 @@ const Dashboard = () => {
     <div className="min-h-screen py-10">
       <div className="container mx-auto px-4">
         <h1 className="font-display text-3xl font-bold mb-6">Dashboard</h1>
-        
+
         <div className="flex flex-wrap gap-4 items-center">
           <Link to="/pickup">
             <Button variant="outline">Pickup Instructions</Button>
@@ -96,8 +96,8 @@ const Dashboard = () => {
                   }}
                   className="rounded-md border shadow"
                 />
-                <Button 
-                  onClick={handleSchedulePickup} 
+                <Button
+                  onClick={handleSchedulePickup}
                   disabled={!pickupDate}
                   className="w-full max-w-[280px]"
                 >
