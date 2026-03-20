@@ -40,17 +40,9 @@ import { Switch } from "@/components/ui/switch";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Trash2, Edit2, Plus, Loader2, ChevronUp, ChevronDown } from "lucide-react";
 import { toast } from "sonner";
+import EditUserDialog, { type UserRecord } from "@/components/EditUserDialog";
 
-interface User {
-  user_id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
-  address: string | null;
-  pickup_or_dropoff: string | null;
-  email_notifications: boolean;
-  weekly_reminders: boolean;
-}
+type User = UserRecord;
 
 type SortField = "first_name" | "last_name" | "email" | null;
 type SortDirection = "asc" | "desc";
@@ -252,55 +244,6 @@ const Users = () => {
     }
   };
 
-  // Handle edit user
-  const handleEditUser = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingUser) return;
-
-    setError("");
-
-    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim()) {
-      setError("First name, last name, and email are required");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const updateData: Record<string, any> = {
-        first_name: form.firstName,
-        last_name: form.lastName,
-        email: form.email,
-        address: form.address || null,
-        pickup_or_dropoff: form.pickupOrDropoff || null,
-        email_notifications: form.emailNotifications,
-        weekly_reminders: form.weeklyReminders,
-      };
-
-      const { error: updateError } = await supabase
-        .from("user_account")
-        .update(updateData)
-        .eq("user_id", editingUser.user_id);
-
-      if (updateError) {
-        if (updateError.code === "23505") {
-          throw new Error("An account with this email already exists");
-        }
-        throw updateError;
-      }
-
-      toast.success("User updated successfully");
-      setIsEditDialogOpen(false);
-      resetForm();
-      fetchUsers();
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to update user";
-      setError(message);
-      toast.error("Failed to update user: " + message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   // Handle delete user
   const handleDeleteUser = async () => {
     if (!editingUser) return;
@@ -357,16 +300,6 @@ const Users = () => {
   // Open edit dialog
   const openEditDialog = (user: User) => {
     setEditingUser(user);
-    setForm({
-      firstName: user.first_name,
-      lastName: user.last_name,
-      email: user.email,
-      password: "",
-      address: user.address || "",
-      pickupOrDropoff: user.pickup_or_dropoff || "",
-      emailNotifications: user.email_notifications,
-      weeklyReminders: user.weekly_reminders,
-    });
     setIsEditDialogOpen(true);
   };
 
@@ -738,140 +671,13 @@ const Users = () => {
           </div>
         </div>
 
-        {/* Edit Dialog */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Edit User</DialogTitle>
-              <DialogDescription>
-                Update user information. Leave password blank to keep unchanged.
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleEditUser} className="space-y-4">
-              {error && (
-                <div className="rounded-md bg-red-50 p-4 text-sm text-red-800">
-                  {error}
-                </div>
-              )}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="edit-firstName">First Name *</Label>
-                  <Input
-                    id="edit-firstName"
-                    value={form.firstName}
-                    onChange={(e) =>
-                      setForm({ ...form, firstName: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="edit-lastName">Last Name *</Label>
-                  <Input
-                    id="edit-lastName"
-                    value={form.lastName}
-                    onChange={(e) =>
-                      setForm({ ...form, lastName: e.target.value })
-                    }
-                    required
-                  />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="edit-email">Email *</Label>
-                <Input
-                  id="edit-email"
-                  type="email"
-                  value={form.email}
-                  onChange={(e) =>
-                    setForm({ ...form, email: e.target.value })
-                  }
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="edit-pickup">Pickup or Dropoff</Label>
-                <Select
-                  value={form.pickupOrDropoff}
-                  onValueChange={(value) =>
-                    setForm({ ...form, pickupOrDropoff: value })
-                  }
-                >
-                  <SelectTrigger id="edit-pickup">
-                    <SelectValue placeholder="Select option" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Pickup">Pickup</SelectItem>
-                    <SelectItem value="Dropoff">Dropoff</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {form.pickupOrDropoff === "Pickup" && (
-                <div>
-                  <Label htmlFor="edit-address">Address *</Label>
-                  <Input
-                    id="edit-address"
-                    value={form.address}
-                    onChange={(e) =>
-                      setForm({ ...form, address: e.target.value })
-                    }
-                    placeholder="Required for pickup"
-                  />
-                </div>
-              )}
-              {form.pickupOrDropoff === "Dropoff" && (
-                <div>
-                  <Label htmlFor="edit-address">Address</Label>
-                  <Input
-                    id="edit-address"
-                    value={form.address}
-                    onChange={(e) =>
-                      setForm({ ...form, address: e.target.value })
-                    }
-                  />
-                </div>
-              )}
-              <div className="flex items-center justify-between">
-                <Label htmlFor="edit-emailNotifications">
-                  Email Notifications
-                </Label>
-                <Switch
-                  id="edit-emailNotifications"
-                  checked={form.emailNotifications}
-                  onCheckedChange={(checked) =>
-                    setForm({ ...form, emailNotifications: checked })
-                  }
-                />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="edit-weeklyReminders">Weekly Reminders</Label>
-                <Switch
-                  id="edit-weeklyReminders"
-                  checked={form.weeklyReminders}
-                  onCheckedChange={(checked) =>
-                    setForm({ ...form, weeklyReminders: checked })
-                  }
-                />
-              </div>
-              <div className="flex justify-end gap-2 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => setIsEditDialogOpen(false)}
-                  disabled={isSubmitting}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting && (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  )}
-                  Update User
-                </Button>
-              </div>
-            </form>
-          </DialogContent>
-        </Dialog>
+        {/* Edit Dialog (shared component) */}
+        <EditUserDialog
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          user={editingUser}
+          onSuccess={fetchUsers}
+        />
 
         {/* Delete Dialog */}
         <AlertDialog

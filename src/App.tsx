@@ -21,7 +21,7 @@ import PickupInstructions from "@/pages/PickupInstructions";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import AdminRoute from "@/components/AdminRoute";
 import Users from "./pages/Users";
-// import MapPage from "./pages/MapPage";
+import MapPage from "./pages/MapPage";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +52,14 @@ const App = () => (
                   element={
                     <AdminRoute>
                       <Users />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/map"
+                  element={
+                    <AdminRoute>
+                      <MapPage />
                     </AdminRoute>
                   }
                 />

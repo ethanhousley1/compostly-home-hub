@@ -28,7 +28,7 @@ const navLinks = [
 ];
 
   return (
-    <nav className="sticky top-0 z-50 border-b bg-white backdrop-blur-md">
+    <nav className="sticky top-0 z-[1000] border-b bg-white backdrop-blur-md">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
         <Link to="/" className="flex items-center gap-2">
           <img src={compostlyLogo} alt="Compostly" className="h-9" />
