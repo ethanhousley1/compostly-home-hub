@@ -149,9 +149,9 @@ Migrations are tracked in `supabase/migrations/`.
 - When a user signs up, the system shall gather a specific pick-up/drop-off preference and address.
 - The system shall provide a Profile Details page that allows users to view and edit their information, notification preferences, and password.
 - The system shall allow users to delete their account from the Profile page with a confirmation step.
-### Not Complete
 - The system shall provide an Admin page for managing service operations.
-- When a user accesses the Admin Page, the system shall display a Map Dashboard with live pins representing user addresses.
 - The system shall provide a Finance dashboard to track rebates and payments.
-- Where a user prefers a specific schedule, the system shall allow them to choose when they want their compost waste to be picked up.
 - If the database or authentication service is unavailable, the system shall prevent interaction and notify the user.
+- When a user accesses the Admin Page, the system shall display a Map Dashboard with live pins representing user addresses.
+### Not Complete
+- Where a user prefers a specific schedule, the system shall allow them to choose when they want their compost waste to be picked up.
