@@ -1,0 +1,254 @@
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
+export interface UserRecord {
+  user_id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  address: string | null;
+  pickup_or_dropoff: string | null;
+  email_notifications: boolean;
+  weekly_reminders: boolean;
+}
+
+interface EditUserDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  user: UserRecord | null;
+  onSuccess: () => void;
+}
+
+const EditUserDialog = ({
+  open,
+  onOpenChange,
+  user,
+  onSuccess,
+}: EditUserDialogProps) => {
+  const [form, setForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    address: "",
+    pickupOrDropoff: "",
+    emailNotifications: true,
+    weeklyReminders: true,
+  });
+  const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (user && open) {
+      setForm({
+        firstName: user.first_name,
+        lastName: user.last_name,
+        email: user.email,
+        address: user.address || "",
+        pickupOrDropoff: user.pickup_or_dropoff || "",
+        emailNotifications: user.email_notifications,
+        weeklyReminders: user.weekly_reminders,
+      });
+      setError("");
+    }
+  }, [user, open]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) return;
+
+    setError("");
+
+    if (!form.firstName.trim() || !form.lastName.trim() || !form.email.trim()) {
+      setError("First name, last name, and email are required");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const { error: updateError } = await supabase
+        .from("user_account")
+        .update({
+          first_name: form.firstName,
+          last_name: form.lastName,
+          email: form.email,
+          address: form.address || null,
+          pickup_or_dropoff: form.pickupOrDropoff || null,
+          email_notifications: form.emailNotifications,
+          weekly_reminders: form.weeklyReminders,
+        })
+        .eq("user_id", user.user_id);
+
+      if (updateError) {
+        if (updateError.code === "23505") {
+          throw new Error("An account with this email already exists");
+        }
+        throw updateError;
+      }
+
+      toast.success("User updated successfully");
+      onOpenChange(false);
+      onSuccess();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to update user";
+      setError(message);
+      toast.error("Failed to update user: " + message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Edit User</DialogTitle>
+          <DialogDescription>
+            Update user information. Leave password blank to keep unchanged.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="rounded-md bg-red-50 p-4 text-sm text-red-800">
+              {error}
+            </div>
+          )}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="edit-firstName">First Name *</Label>
+              <Input
+                id="edit-firstName"
+                value={form.firstName}
+                onChange={(e) =>
+                  setForm({ ...form, firstName: e.target.value })
+                }
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-lastName">Last Name *</Label>
+              <Input
+                id="edit-lastName"
+                value={form.lastName}
+                onChange={(e) =>
+                  setForm({ ...form, lastName: e.target.value })
+                }
+                required
+              />
+            </div>
+          </div>
+          <div>
+            <Label htmlFor="edit-email">Email *</Label>
+            <Input
+              id="edit-email"
+              type="email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="edit-pickup">Pickup or Dropoff</Label>
+            <Select
+              value={form.pickupOrDropoff}
+              onValueChange={(value) =>
+                setForm({ ...form, pickupOrDropoff: value })
+              }
+            >
+              <SelectTrigger id="edit-pickup">
+                <SelectValue placeholder="Select option" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Pickup">Pickup</SelectItem>
+                <SelectItem value="Dropoff">Dropoff</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          {form.pickupOrDropoff === "Pickup" && (
+            <div>
+              <Label htmlFor="edit-address">Address *</Label>
+              <Input
+                id="edit-address"
+                value={form.address}
+                onChange={(e) =>
+                  setForm({ ...form, address: e.target.value })
+                }
+                placeholder="Required for pickup"
+              />
+            </div>
+          )}
+          {form.pickupOrDropoff === "Dropoff" && (
+            <div>
+              <Label htmlFor="edit-address">Address</Label>
+              <Input
+                id="edit-address"
+                value={form.address}
+                onChange={(e) =>
+                  setForm({ ...form, address: e.target.value })
+                }
+              />
+            </div>
+          )}
+          <div className="flex items-center justify-between">
+            <Label htmlFor="edit-emailNotifications">Email Notifications</Label>
+            <Switch
+              id="edit-emailNotifications"
+              checked={form.emailNotifications}
+              onCheckedChange={(checked) =>
+                setForm({ ...form, emailNotifications: checked })
+              }
+            />
+          </div>
+          <div className="flex items-center justify-between">
+            <Label htmlFor="edit-weeklyReminders">Weekly Reminders</Label>
+            <Switch
+              id="edit-weeklyReminders"
+              checked={form.weeklyReminders}
+              onCheckedChange={(checked) =>
+                setForm({ ...form, weeklyReminders: checked })
+              }
+            />
+          </div>
+          <div className="flex justify-end gap-2 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => onOpenChange(false)}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              Update User
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default EditUserDialog;

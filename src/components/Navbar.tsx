@@ -7,20 +7,28 @@ import compostlyLogo from "@/assets/compostly-logo.png";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { isLoggedIn, logout } = useAuth();
+  const { isLoggedIn, logout, user } = useAuth();
   const navigate = useNavigate();
 
-  const navLinks = [
-    ...(!isLoggedIn ? [{ label: "Sign Up", to: "/signup", isCta: true }, { separator: true }] : []),
-    { label: "Home", to: "/" },
-    { label: "Dashboard", to: "/dashboard" },
-    { label: "About Us", to: "/about" },
-    { label: "FAQ", to: "/faq" },
-    ...(isLoggedIn ? [{ label: "Profile", to: "/profile" }] : []),
-  ];
+const isAdmin = isLoggedIn && user?.email?.toLowerCase() === "admin@compostly.com";
+
+const navLinks = [
+  { label: "Home", to: "/" },
+  ...(!isLoggedIn ? [{ label: "Sign Up", to: "/signup" }] : []),
+  ...(isLoggedIn ? [{ label: "Dashboard", to: "/dashboard" }] : []),
+  { label: "About Us", to: "/about" },
+  { label: "FAQ", to: "/faq" },
+  ...(isLoggedIn ? [{ label: "Profile", to: "/profile" }] : []),
+  ...(isAdmin
+    ? [
+        { label: "Users", to: "/users" },
+        { label: "Map", to: "/map" },
+      ]
+    : []),
+];
 
   return (
-    <nav className="sticky top-0 z-50 border-b bg-white backdrop-blur-md">
+    <nav className="sticky top-0 z-[1000] border-b bg-white backdrop-blur-md">
       <div className="container mx-auto flex items-center justify-between px-4 py-3">
         <Link to="/" className="flex items-center gap-2">
           <img src={compostlyLogo} alt="Compostly" className="h-9" />

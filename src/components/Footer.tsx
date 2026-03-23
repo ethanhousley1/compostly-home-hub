@@ -29,9 +29,8 @@ const Footer = () => (
           </div>
         </div>
         <div>
-          <h4 className="font-display font-semibold mb-3">Contact</h4>
-          <p className="text-sm text-muted-foreground">hello@compostly.com</p>
-          <Link to="/contact" className="text-sm text-primary hover:underline">Contact Us</Link>
+          <h4 className="font-display font-semibold mb-3">Contact Us</h4>
+          <a href="mailto:help@compostly.org" className="text-sm text-primary hover:underline">help@compostly.org</a>
         </div>
       </div>
       <div className="mt-8 border-t pt-4 text-center text-xs text-muted-foreground">

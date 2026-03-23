@@ -14,9 +14,14 @@ import Dashboard from "./pages/Dashboard";
 import AboutUs from "./pages/AboutUs";
 import Profile from "./pages/Profile";
 import FAQ from "./pages/FAQ";
-import Contact from "./pages/Contact";
 import WhatToCompost from "./pages/WhatToCompost";
 import NotFound from "./pages/NotFound";
+import ScrollToTop from "./pages/ScrollToTop";
+import PickupInstructions from "@/pages/PickupInstructions";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import AdminRoute from "@/components/AdminRoute";
+import Users from "./pages/Users";
+import MapPage from "./pages/MapPage";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +31,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <ScrollToTop />
         <AuthProvider>
           <div className="flex min-h-screen flex-col">
             <Navbar />
@@ -35,12 +41,28 @@ const App = () => (
                 <Route path="/signup" element={<SignUp />} />
                 <Route path="/signup-complete" element={<SignUpComplete />} />
                 <Route path="/signin" element={<SignIn />} />
-                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/about" element={<AboutUs />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/faq" element={<FAQ />} />
-                <Route path="/contact" element={<Contact />} />
                 <Route path="/what-to-compost" element={<WhatToCompost />} />
+                <Route path="/pickup" element={<PickupInstructions />} />
+                <Route
+                  path="/users"
+                  element={
+                    <AdminRoute>
+                      <Users />
+                    </AdminRoute>
+                  }
+                />
+                <Route
+                  path="/map"
+                  element={
+                    <AdminRoute>
+                      <MapPage />
+                    </AdminRoute>
+                  }
+                />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
