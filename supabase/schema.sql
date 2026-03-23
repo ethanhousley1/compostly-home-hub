@@ -6,6 +6,7 @@ CREATE SEQUENCE IF NOT EXISTS compost_truck_driver_employee_id_seq;
 CREATE SEQUENCE IF NOT EXISTS dropoff_location_location_id_seq;
 CREATE SEQUENCE IF NOT EXISTS pickup_time_time_id_seq;
 CREATE SEQUENCE IF NOT EXISTS rebate_rebate_id_seq;
+CREATE SEQUENCE IF NOT EXISTS scheduled_pickup_pickup_id_seq;
 CREATE SEQUENCE IF NOT EXISTS user_account_user_id_seq;
 
 -- Tables (ordered for foreign-key dependencies)
@@ -32,6 +33,21 @@ CREATE TABLE IF NOT EXISTS public.rebate (
   CONSTRAINT rebate_pkey PRIMARY KEY (rebate_id),
   CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES public.user_account(user_id)
 );
+
+CREATE TABLE IF NOT EXISTS public.scheduled_pickup (
+  pickup_id integer NOT NULL DEFAULT nextval('scheduled_pickup_pickup_id_seq'::regclass),
+  account_id integer NOT NULL,
+  pickup_date date NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT scheduled_pickup_pkey PRIMARY KEY (pickup_id),
+  CONSTRAINT scheduled_pickup_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.user_account(user_id) ON DELETE CASCADE,
+  CONSTRAINT scheduled_pickup_account_id_pickup_date_key UNIQUE (account_id, pickup_date)
+);
+
+CREATE INDEX IF NOT EXISTS scheduled_pickup_account_id_pickup_date_idx
+  ON public.scheduled_pickup (account_id, pickup_date);
+
+ALTER TABLE public.scheduled_pickup DISABLE ROW LEVEL SECURITY;
 
 CREATE TABLE IF NOT EXISTS public.pickup_time (
   time_id integer NOT NULL DEFAULT nextval('pickup_time_time_id_seq'::regclass),

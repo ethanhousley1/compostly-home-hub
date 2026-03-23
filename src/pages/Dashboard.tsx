@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { format, parseISO } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
@@ -34,6 +35,24 @@ type Rebate = {
   rebate_amount: number | null;
 };
 
+type ScheduledPickup = {
+  pickup_id: number;
+  pickup_date: string;
+};
+
+const toPickupDateValue = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+const formatPickupDateLabel = (pickupDate: string) =>
+  format(parseISO(pickupDate), "EEEE, MMMM d");
+
+const sortScheduledPickups = (pickups: ScheduledPickup[]) =>
+  [...pickups].sort((a, b) => a.pickup_date.localeCompare(b.pickup_date));
+
 const Dashboard = () => {
   const [tab, setTab] = useState("schedule");
   const { user } = useAuth();
@@ -41,29 +60,107 @@ const Dashboard = () => {
   const [rebateLoading, setRebateLoading] = useState(true);
   const [pickupDate, setPickupDate] = useState<Date | undefined>();
   const [isPickupOpen, setIsPickupOpen] = useState(false);
-  const [upcomingPickups, setUpcomingPickups] = useState<Date[]>([]);
+  const [scheduledPickups, setScheduledPickups] = useState<ScheduledPickup[]>([]);
+  const [pickupsLoading, setPickupsLoading] = useState(true);
+  const [isSchedulingPickup, setIsSchedulingPickup] = useState(false);
 
-  const handleSchedulePickup = () => {
+  const handleSchedulePickup = async () => {
     if (!pickupDate) return;
-    setUpcomingPickups(prev => [...prev, pickupDate].sort((a, b) => a.getTime() - b.getTime()));
-    setIsPickupOpen(false);
-    toast.success("Pickup Scheduled!", {
-      description: `Your pickup is scheduled for ${pickupDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}`
-    });
-    setPickupDate(undefined);
+    if (!user) {
+      toast.error("Please sign in to schedule a pickup.");
+      return;
+    }
+
+    const pickupDateValue = toPickupDateValue(pickupDate);
+    if (scheduledPickups.some((scheduledPickup) => scheduledPickup.pickup_date === pickupDateValue)) {
+      toast.error("You already have a pickup scheduled for that date.");
+      return;
+    }
+
+    setIsSchedulingPickup(true);
+    try {
+      const { data, error } = await supabase
+        .from("scheduled_pickup")
+        .insert({
+          account_id: user.id,
+          pickup_date: pickupDateValue,
+        })
+        .select("pickup_id, pickup_date")
+        .single();
+
+      if (error) {
+        if (error.code === "23505") {
+          throw new Error("You already have a pickup scheduled for that date.");
+        }
+        throw new Error(error.message);
+      }
+
+      setScheduledPickups((prev) => sortScheduledPickups([...prev, data as ScheduledPickup]));
+      setIsPickupOpen(false);
+      setPickupDate(undefined);
+      toast.success("Pickup Scheduled!", {
+        description: `Your pickup is scheduled for ${formatPickupDateLabel(pickupDateValue)}.`,
+      });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to schedule pickup.";
+      toast.error(message);
+    } finally {
+      setIsSchedulingPickup(false);
+    }
   };
 
   useEffect(() => {
-    if (!user) return;
-    setRebateLoading(true);
-    supabase
-      .from("rebate")
-      .select("rebate_id, compost_weight, rebate_amount")
-      .eq("account_id", user.id)
-      .then(({ data, error }) => {
-        if (!error && data) setRebates(data as Rebate[]);
+    let isCancelled = false;
+
+    const loadDashboardData = async () => {
+      if (!user) {
+        setRebates([]);
+        setScheduledPickups([]);
         setRebateLoading(false);
-      });
+        setPickupsLoading(false);
+        return;
+      }
+
+      setRebateLoading(true);
+      setPickupsLoading(true);
+
+      const todayValue = toPickupDateValue(new Date());
+      const [rebateResult, pickupResult] = await Promise.all([
+        supabase
+          .from("rebate")
+          .select("rebate_id, compost_weight, rebate_amount")
+          .eq("account_id", user.id),
+        supabase
+          .from("scheduled_pickup")
+          .select("pickup_id, pickup_date")
+          .eq("account_id", user.id)
+          .gte("pickup_date", todayValue)
+          .order("pickup_date", { ascending: true }),
+      ]);
+
+      if (isCancelled) return;
+
+      if (!rebateResult.error && rebateResult.data) {
+        setRebates(rebateResult.data as Rebate[]);
+      } else {
+        setRebates([]);
+      }
+
+      if (!pickupResult.error && pickupResult.data) {
+        setScheduledPickups(sortScheduledPickups(pickupResult.data as ScheduledPickup[]));
+      } else {
+        setScheduledPickups([]);
+      }
+
+      setRebateLoading(false);
+      setPickupsLoading(false);
+    };
+
+    void loadDashboardData();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [user]);
 
   return (
@@ -98,25 +195,31 @@ const Dashboard = () => {
                 />
                 <Button
                   onClick={handleSchedulePickup}
-                  disabled={!pickupDate}
+                  disabled={!pickupDate || isSchedulingPickup}
                   className="w-full max-w-[280px]"
                 >
-                  Confirm Pickup Date
+                  {isSchedulingPickup ? "Saving..." : "Confirm Pickup Date"}
                 </Button>
               </div>
             </DialogContent>
           </Dialog>
         </div>
 
-        {upcomingPickups.length > 0 && (
+        {pickupsLoading && (
+          <div className="mt-6 p-5 rounded-xl border bg-card text-card-foreground shadow-sm animate-fade-in">
+            <p className="text-sm text-muted-foreground">Loading upcoming pickups...</p>
+          </div>
+        )}
+
+        {!pickupsLoading && scheduledPickups.length > 0 && (
           <div className="mt-6 p-5 rounded-xl border bg-card text-card-foreground shadow-sm animate-fade-in">
             <h3 className="font-semibold mb-3 flex items-center gap-2">
               <CalendarIcon className="h-5 w-5 text-primary" /> Upcoming Pickups
             </h3>
             <ul className="space-y-2 text-sm text-muted-foreground ml-7">
-              {upcomingPickups.map((d, i) => (
-                <li key={i} className="list-disc">
-                  {d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+              {scheduledPickups.map((scheduledPickup) => (
+                <li key={scheduledPickup.pickup_id} className="list-disc">
+                  {formatPickupDateLabel(scheduledPickup.pickup_date)}
                 </li>
               ))}
             </ul>

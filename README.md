@@ -19,6 +19,8 @@ Backend:
 
 > **Note:** Supabase Auth is **not** used. All authentication is handled by querying the `user_account` table directly. Passwords are stored and compared in plaintext via the Supabase JS client. The session is persisted in `localStorage`.
 
+> **RLS note:** Because the browser talks to Supabase with the anon key and there is no Supabase Auth session, tables used by the active client flow cannot rely on per-user row-level security policies. Those tables currently need RLS disabled or must be moved behind a trusted server/API.
+
 Legacy Express server is still in `server/` for local development.
 
 ## Architecture Diagram
@@ -127,7 +129,7 @@ To run the docs locally: `cd docs && npm install && npm run dev`.
 
 ## Database
 
-All user data lives in the `user_account` table. The full schema is in `db/schema.sql` and `supabase/schema.sql`.
+Core user data lives in `user_account`, and persisted dashboard pickup dates live in `scheduled_pickup`. The full schema is in `db/schema.sql` and `supabase/schema.sql`.
 
 Key columns on `user_account`:
 | Column | Type | Notes |
@@ -141,6 +143,14 @@ Key columns on `user_account`:
 | `address` | text | Required when pickup |
 | `email_notifications` | boolean | Default true |
 | `weekly_reminders` | boolean | Default true |
+
+Key columns on `scheduled_pickup`:
+| Column | Type | Notes |
+|---|---|---|
+| `pickup_id` | integer (PK) | Auto-increment |
+| `account_id` | integer (FK) | References `user_account.user_id` |
+| `pickup_date` | date | Scheduled pickup date |
+| `created_at` | timestamptz | Defaults to current timestamp |
 
 Migrations are tracked in `supabase/migrations/`.
 
