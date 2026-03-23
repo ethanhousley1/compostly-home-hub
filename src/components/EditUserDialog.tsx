@@ -83,6 +83,16 @@ const EditUserDialog = ({
       return;
     }
 
+    if (!form.pickupOrDropoff) {
+      setError("Please select pickup or dropoff");
+      return;
+    }
+
+    if (form.pickupOrDropoff === "Pickup" && !form.address.trim()) {
+      setError("Address is required for pickup");
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       const { error: updateError } = await supabase
@@ -124,7 +134,7 @@ const EditUserDialog = ({
         <DialogHeader>
           <DialogTitle>Edit User</DialogTitle>
           <DialogDescription>
-            Update user information. Leave password blank to keep unchanged.
+            Update user information. Pickup/dropoff selection is required.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -168,7 +178,7 @@ const EditUserDialog = ({
             />
           </div>
           <div>
-            <Label htmlFor="edit-pickup">Pickup or Dropoff</Label>
+            <Label htmlFor="edit-pickup">Pickup or Dropoff *</Label>
             <Select
               value={form.pickupOrDropoff}
               onValueChange={(value) =>
