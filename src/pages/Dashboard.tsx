@@ -2,11 +2,14 @@ import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { Calendar, DollarSign, MapPin, Leaf } from "lucide-react";
+import { Calendar as CalendarIcon, DollarSign, MapPin, Leaf } from "lucide-react";
 import CompostMap from "@/components/CompostMap";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Calendar } from "@/components/ui/calendar";
+import { toast } from "sonner";
 
 const scheduleData = [
   { day: "Monday", task: "Add greens (fruit/veggie scraps)", done: true },
@@ -36,6 +39,19 @@ const Dashboard = () => {
   const { user } = useAuth();
   const [rebates, setRebates] = useState<Rebate[]>([]);
   const [rebateLoading, setRebateLoading] = useState(true);
+  const [pickupDate, setPickupDate] = useState<Date | undefined>();
+  const [isPickupOpen, setIsPickupOpen] = useState(false);
+  const [upcomingPickups, setUpcomingPickups] = useState<Date[]>([]);
+
+  const handleSchedulePickup = () => {
+    if (!pickupDate) return;
+    setUpcomingPickups(prev => [...prev, pickupDate].sort((a, b) => a.getTime() - b.getTime()));
+    setIsPickupOpen(false);
+    toast.success("Pickup Scheduled!", {
+      description: `Your pickup is scheduled for ${pickupDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}`
+    });
+    setPickupDate(undefined);
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -54,14 +70,64 @@ const Dashboard = () => {
     <div className="min-h-screen py-10">
       <div className="container mx-auto px-4">
         <h1 className="font-display text-3xl font-bold mb-6">Dashboard</h1>
-        <Link to="/pickup">
-          <Button>Pickup Instructions</Button>
-        </Link>
+
+        <div className="flex flex-wrap gap-4 items-center">
+          <Link to="/pickup">
+            <Button variant="outline">Pickup Instructions</Button>
+          </Link>
+
+          <Dialog open={isPickupOpen} onOpenChange={setIsPickupOpen}>
+            <DialogTrigger asChild>
+              <Button>Schedule Pickup</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Schedule a Pickup</DialogTitle>
+              </DialogHeader>
+              <div className="flex flex-col items-center space-y-4 py-4">
+                <Calendar
+                  mode="single"
+                  selected={pickupDate}
+                  onSelect={setPickupDate}
+                  disabled={(date) => {
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    return date < today;
+                  }}
+                  className="rounded-md border shadow"
+                />
+                <Button
+                  onClick={handleSchedulePickup}
+                  disabled={!pickupDate}
+                  className="w-full max-w-[280px]"
+                >
+                  Confirm Pickup Date
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {upcomingPickups.length > 0 && (
+          <div className="mt-6 p-5 rounded-xl border bg-card text-card-foreground shadow-sm animate-fade-in">
+            <h3 className="font-semibold mb-3 flex items-center gap-2">
+              <CalendarIcon className="h-5 w-5 text-primary" /> Upcoming Pickups
+            </h3>
+            <ul className="space-y-2 text-sm text-muted-foreground ml-7">
+              {upcomingPickups.map((d, i) => (
+                <li key={i} className="list-disc">
+                  {d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         <br />
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="mb-6">
             <TabsTrigger value="schedule" className="gap-2">
-              <Calendar className="h-4 w-4" /> Schedule
+              <CalendarIcon className="h-4 w-4" /> Schedule
             </TabsTrigger>
             <TabsTrigger value="finances" className="gap-2">
               <DollarSign className="h-4 w-4" /> Finances

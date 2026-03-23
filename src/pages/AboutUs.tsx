@@ -2,6 +2,8 @@ import aboutImage from "@/assets/about-hero-composting.png";
 import garrettHeadshot from "@/assets/headshot-garrett.jpg";
 import brocHeadshot from "@/assets/headshot-broc.jpeg";
 import ethanHeadshot from "@/assets/headshot-ethan.jpg";
+import michaelHeadshot from "@/assets/headshot-michael.jpg";
+import dawsonHeadshot from "@/assets/headshot-dawson.jpg";
 import { Leaf, Heart, TreePine } from "lucide-react";
 
 const AboutUs = () => (
@@ -22,7 +24,7 @@ const AboutUs = () => (
             About Compostly
           </h1>
           <p className="mt-4 text-lg text-primary-foreground/80">
-            We're on a mission to give back to the Earth. 
+            We're on a mission to give back to the Earth.
           </p>
         </div>
       </div>
@@ -88,8 +90,8 @@ const AboutUs = () => (
             { name: "Garrett Nelson", role: "Investor | Analyst", img: garrettHeadshot },
             { name: "Logan Reeder", role: "CEO | Co-Founder" },
             { name: "Ethan Housley", role: "CTO | Founder", img: ethanHeadshot },
-            { name: "Dawson Broadbent", role: "CMO" },
-            { name: "Michael Jones", role: "CFO" },
+            { name: "Dawson Broadbent", role: "CMO", img: dawsonHeadshot },
+            { name: "Michael Jones", role: "CFO", img: michaelHeadshot },
             { name: "Garret Safsten", role: "CRO" },
             { name: "Joaquin Elizalde ", role: "President | Co-Founder" },
             { name: "Broc Cuartas", role: "Investor | Advisor", img: brocHeadshot },
