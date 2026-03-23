@@ -1,8 +1,11 @@
 ## App Summary
+
 Compostly is a compost pickup service that helps individuals compost more easily and consistently. In areas where municipalities do not offer compost collection—or for those who prefer a simpler option—users can schedule regular bucket pickups through Compostly and receive rebates for their participation.
 
 ## Tech Stack (PERN stack)
+
 Frontend:
+
 - React
 - TypeScript
 - Vite
@@ -10,6 +13,7 @@ Frontend:
 - shadcn-ui
 
 Backend:
+
 - Supabase PostgreSQL (data storage — accessed via the Supabase JS client from the browser)
 - Vercel Serverless Functions in `api/` (legacy — not used by the active signup/login flow)
 
@@ -22,7 +26,9 @@ Legacy Express server is still in `server/` for local development.
 <img src="public/System_Architecture_Diagram.png" alt="Architecture Diagram" width="600">
 
 ## Prerequisites
+
 To run this project locally, you need:
+
 - Node.js (v18+)
 - npm (comes with Node)
 - Git (to clone the repository)
@@ -32,11 +38,13 @@ To run this project locally, you need:
 ## Installation and Setup
 
 ### Step 1: Clone the repository
+
 ```
 git clone <https://github.com/ethanhousley1/compostly-home-hub.git>
 ```
 
 ### Step 2: Install dependencies
+
 ```
 npm install
 ```
@@ -44,37 +52,45 @@ npm install
 ### Step 3: Database setup
 
 **Option A — Supabase (recommended)**
+
 1. Create a Supabase project at https://supabase.com.
 2. In the Supabase SQL Editor, paste and run the contents of `supabase/schema.sql` (or `db/schema.sql`).
 3. If you are migrating an existing database, run the migration in `supabase/migrations/` instead.
 4. (Optional) Run `db/seed.sql` for sample data.
 
 **Option B — Local PostgreSQL (for development)**
+
 - Create a database named `compostly` (e.g. `createdb compostly`).
 - Run the schema: `psql -d compostly -f db/schema.sql`
 - Run the seed: `psql -d compostly -f db/seed.sql`
 
 ### Step 4: Environment
+
 Copy `.env.example` to `.env` and fill in your values:
+
 ```
 cp .env.example .env
 ```
 
 Required variables (both local and production):
+
 - `VITE_SUPABASE_URL` — your Supabase project URL (Settings → API)
 - `VITE_SUPABASE_ANON_KEY` — your Supabase anon/public key (Settings → API)
 
 These are used by the Supabase JS client to read/write the `user_account` table. No Supabase Auth configuration is needed.
 
-For local dev with the legacy Express server, also set `PGPASSWORD` (and other PG* vars).
+For local dev with the legacy Express server, also set `PGPASSWORD` (and other PG\* vars).
 
 ## Running Locally
 
 ### Frontend + backend via Vite proxy (recommended)
+
 1. **Start the Express backend** (in one terminal):
+
    ```
    cd server && npm install && npm run dev
    ```
+
    The API runs at http://localhost:3000.
 
 2. **Start the frontend** (in another terminal, from project root):
@@ -101,11 +117,11 @@ Everything — the React app, the docs, and the API — ships from a **single Ve
 
 Note: The `api/` directory still deploys as serverless functions, but the active signup/login/profile flow uses the Supabase JS client to query the `user_account` table directly from the browser.
 
-| Path | What it serves |
-|---|---|
-| `/` | React SPA |
-| `/docs` | Astro/Starlight documentation |
-| `/api/*` | Serverless functions |
+| Path     | What it serves                |
+| -------- | ----------------------------- |
+| `/`      | React SPA                     |
+| `/docs`  | Astro/Starlight documentation |
+| `/api/*` | Serverless functions          |
 
 To run the docs locally: `cd docs && npm install && npm run dev`.
 
@@ -129,6 +145,7 @@ Key columns on `user_account`:
 Migrations are tracked in `supabase/migrations/`.
 
 ## Verifying the Vertical Slice (Sign Up)
+
 1. **Trigger the feature:** Open the app, go to Sign Up, fill in first name, last name, email, and password (≥6 chars), select pickup or dropoff, then click **Create Account**.
 2. **Confirm the UI:** You should be redirected to the thank-you page and see "Welcome, [First Name]!"
 3. **Confirm the database:** In the Supabase dashboard, go to **Table Editor → user_account** and verify the new row appears with the correct email, name, and preferences.
@@ -136,7 +153,9 @@ Migrations are tracked in `supabase/migrations/`.
 5. **Confirm network:** In browser DevTools → Network, verify that signup/login requests go to your Supabase URL (`*.supabase.co`) as database queries, not to `/api/signup`.
 
 ## EARS Requirements
+
 ### Complete
+
 - When a user clicks 'Create Account' with valid details, the system shall create a new user in the `user_account` table and redirect to the thank-you page.
 - While the user is logged in, the system shall persist the session across page refreshes using localStorage.
 - The system shall support a unified build process that ships the React SPA, Astro docs, and serverless functions from a single Vercel project.
@@ -153,5 +172,4 @@ Migrations are tracked in `supabase/migrations/`.
 - The system shall provide a Finance dashboard to track rebates and payments.
 - If the database or authentication service is unavailable, the system shall prevent interaction and notify the user.
 - When a user accesses the Admin Page, the system shall display a Map Dashboard with live pins representing user addresses.
-### Not Complete
 - Where a user prefers a specific schedule, the system shall allow them to choose when they want their compost waste to be picked up.
