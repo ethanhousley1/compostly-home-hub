@@ -6,7 +6,7 @@ const faqs = [
   { q: "How long does composting take?", a: "Depending on the method, composting can take anywhere from 2 weeks (hot composting) to 6 months (cold composting). Turning your pile regularly speeds things up." },
   { q: "Does compost smell bad?", a: "A well-maintained compost pile should smell earthy, not foul. Bad smells usually mean the pile needs more browns (carbon) or better aeration." },
   { q: "What should I NOT compost?", a: "Avoid meat, dairy, oils, pet waste, and diseased plants. These can attract pests or introduce harmful pathogens." },
-  { q: "Is Compostly free to use?", a: "Compostly is free for basic features including composting guides, scheduling, and finding community locations. Premium features are coming soon!" },
+  { q: "Is Compostly free to use?", a: "No, Compostly is subscription-based. Included with a subscription is a composting bin, pickup or drop-off options, and rebates for what you compost!" },
   { q: "How do I know my compost is ready?", a: "Finished compost is dark, crumbly, and smells like fresh earth. It should no longer resemble the original materials you added." },
 ];
 

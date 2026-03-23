@@ -3,12 +3,23 @@ import { format, parseISO } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { Calendar as CalendarIcon, DollarSign, MapPin, Leaf } from "lucide-react";
+import {
+  Calendar as CalendarIcon,
+  DollarSign,
+  MapPin,
+  Leaf,
+} from "lucide-react";
 import CompostMap from "@/components/CompostMap";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 
@@ -23,10 +34,9 @@ const scheduleData = [
 ];
 
 const financeData = [
-  { item: "Compost Bin", cost: 45, date: "Jan 2026" },
-  { item: "Worm Kit", cost: 30, date: "Jan 2026" },
+  { item: "Compost Bin", cost: 0, date: "Jan 2026" },
+  { item: "Worm Kit", cost: 15, date: "Jan 2026" },
   { item: "Soil Test Kit", cost: 15, date: "Feb 2026" },
-  { item: "Compost Thermometer", cost: 12, date: "Feb 2026" },
 ];
 
 type Rebate = {
@@ -66,47 +76,14 @@ const Dashboard = () => {
 
   const handleSchedulePickup = async () => {
     if (!pickupDate) return;
-    if (!user) {
-      toast.error("Please sign in to schedule a pickup.");
-      return;
-    }
-
-    const pickupDateValue = toPickupDateValue(pickupDate);
-    if (scheduledPickups.some((scheduledPickup) => scheduledPickup.pickup_date === pickupDateValue)) {
-      toast.error("You already have a pickup scheduled for that date.");
-      return;
-    }
-
-    setIsSchedulingPickup(true);
-    try {
-      const { data, error } = await supabase
-        .from("scheduled_pickup")
-        .insert({
-          account_id: user.id,
-          pickup_date: pickupDateValue,
-        })
-        .select("pickup_id, pickup_date")
-        .single();
-
-      if (error) {
-        if (error.code === "23505") {
-          throw new Error("You already have a pickup scheduled for that date.");
-        }
-        throw new Error(error.message);
-      }
-
-      setScheduledPickups((prev) => sortScheduledPickups([...prev, data as ScheduledPickup]));
-      setIsPickupOpen(false);
-      setPickupDate(undefined);
-      toast.success("Pickup Scheduled!", {
-        description: `Your pickup is scheduled for ${formatPickupDateLabel(pickupDateValue)}.`,
-      });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to schedule pickup.";
-      toast.error(message);
-    } finally {
-      setIsSchedulingPickup(false);
-    }
+    setUpcomingPickups((prev) =>
+      [...prev, pickupDate].sort((a, b) => a.getTime() - b.getTime())
+    );
+    setIsPickupOpen(false);
+    toast.success("Pickup Scheduled!", {
+      description: `Your pickup is scheduled for ${pickupDate.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}`,
+    });
+    setPickupDate(undefined);
   };
 
   useEffect(() => {
@@ -217,9 +194,13 @@ const Dashboard = () => {
               <CalendarIcon className="h-5 w-5 text-primary" /> Upcoming Pickups
             </h3>
             <ul className="space-y-2 text-sm text-muted-foreground ml-7">
-              {scheduledPickups.map((scheduledPickup) => (
-                <li key={scheduledPickup.pickup_id} className="list-disc">
-                  {formatPickupDateLabel(scheduledPickup.pickup_date)}
+              {upcomingPickups.map((d, i) => (
+                <li key={i} className="list-disc">
+                  {d.toLocaleDateString("en-US", {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                  })}
                 </li>
               ))}
             </ul>
@@ -277,9 +258,13 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 {rebateLoading ? (
-                  <p className="text-sm text-muted-foreground">Loading rebates…</p>
+                  <p className="text-sm text-muted-foreground">
+                    Loading rebates…
+                  </p>
                 ) : rebates.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">No rebates yet.</p>
+                  <p className="text-sm text-muted-foreground">
+                    No rebates yet.
+                  </p>
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
@@ -291,19 +276,38 @@ const Dashboard = () => {
                       </thead>
                       <tbody>
                         {rebates.map((r) => (
-                          <tr key={r.rebate_id} className="border-b last:border-0">
-                            <td className="py-3">{r.compost_weight?.toFixed(1) ?? "—"}</td>
-                            <td className="py-3">${r.rebate_amount?.toFixed(2) ?? "—"}</td>
+                          <tr
+                            key={r.rebate_id}
+                            className="border-b last:border-0"
+                          >
+                            <td className="py-3">
+                              {r.compost_weight?.toFixed(1) ?? "—"}
+                            </td>
+                            <td className="py-3">
+                              ${r.rebate_amount?.toFixed(2) ?? "—"}
+                            </td>
                           </tr>
                         ))}
                       </tbody>
                       <tfoot>
                         <tr className="font-semibold">
                           <td className="pt-3">
-                            {rebates.reduce((sum, r) => sum + (r.compost_weight ?? 0), 0).toFixed(1)} lbs
+                            {rebates
+                              .reduce(
+                                (sum, r) => sum + (r.compost_weight ?? 0),
+                                0
+                              )
+                              .toFixed(1)}{" "}
+                            lbs
                           </td>
                           <td className="pt-3">
-                            ${rebates.reduce((sum, r) => sum + (r.rebate_amount ?? 0), 0).toFixed(2)}
+                            $
+                            {rebates
+                              .reduce(
+                                (sum, r) => sum + (r.rebate_amount ?? 0),
+                                0
+                              )
+                              .toFixed(2)}
                           </td>
                         </tr>
                       </tfoot>
