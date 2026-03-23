@@ -40,3 +40,12 @@ CREATE TABLE public.user_account (
   weekly_reminders boolean NOT NULL DEFAULT true,
   CONSTRAINT user_account_pkey PRIMARY KEY (user_id)
 );
+CREATE TABLE public.scheduled_pickup (
+  pickup_id integer NOT NULL DEFAULT nextval('scheduled_pickup_pickup_id_seq'::regclass),
+  account_id integer NOT NULL,
+  pickup_date date NOT NULL,
+  created_at timestamp with time zone NOT NULL DEFAULT now(),
+  CONSTRAINT scheduled_pickup_pkey PRIMARY KEY (pickup_id),
+  CONSTRAINT scheduled_pickup_account_id_fkey FOREIGN KEY (account_id) REFERENCES public.user_account(user_id) ON DELETE CASCADE,
+  CONSTRAINT scheduled_pickup_account_id_pickup_date_key UNIQUE (account_id, pickup_date)
+);

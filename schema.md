@@ -6,7 +6,7 @@ This document describes the database schema for Compostly based on:
 - the current SQL files in `db/schema.sql`
 - the functionality currently implemented in the website and API
 
-As of March 12, 2026, the only live persisted feature is account creation and sign-in through `user_account`. The dashboard, rebate display, pickup scheduling, and map data are currently static in the frontend and are not yet backed by database queries.
+As of March 23, 2026, live persisted features include account creation and sign-in through `user_account`, profile preference updates on `user_account`, rebate reads from `rebate`, and dashboard pickup scheduling through `scheduled_pickup`. Map data and weekly composting tasks are still static in the frontend.
 
 ## Current Implementation Status
 
@@ -16,11 +16,14 @@ As of March 12, 2026, the only live persisted feature is account creation and si
   - Used by the `POST /api/signup` endpoint
   - Used by the `POST /api/login` endpoint
   - Powers the profile page fields for name, email, address, and service type
+- `rebate`
+  - Queried by the dashboard rebate card
+- `scheduled_pickup`
+  - Stores user-selected pickup dates from the dashboard schedule flow
 
 ### Defined in SQL or ERD, but not yet wired into the app
 
 - `pickup_time`
-- `rebate`
 - `compost_truck_driver`
 - `dropoff_location`
 - `region` (not present in the original ERD image as a table, but required by the foreign keys shown there)
@@ -75,7 +78,18 @@ Tracks compost-based rebates associated with a user account.
 | `compost_weight` | `FLOAT` | Nullable | Weight used to calculate the rebate |
 | `rebate_amount` | `FLOAT` | Nullable | Currency amount; `NUMERIC(10,2)` would be safer in production |
 
-### 5. `compost_truck_driver`
+### 5. `scheduled_pickup`
+
+Represents a pickup date a specific user has scheduled from the dashboard.
+
+| Column | Type | Constraints | Notes |
+| --- | --- | --- | --- |
+| `pickup_id` | `SERIAL` | Primary key | Scheduled pickup record ID |
+| `account_id` | `INT` | Not null, foreign key to `user_account(user_id)` | The user who scheduled the pickup |
+| `pickup_date` | `DATE` | Not null | Calendar date selected in the dashboard |
+| `created_at` | `TIMESTAMPTZ` | Not null, default `now()` | Audit timestamp for when the pickup was scheduled |
+
+### 6. `compost_truck_driver`
 
 Represents internal route assignments for pickup operations.
 
@@ -85,7 +99,7 @@ Represents internal route assignments for pickup operations.
 | `route_id` | `VARCHAR(50)` | Nullable | Route identifier such as `SLC-A` |
 | `route_time` | `VARCHAR(100)` | Nullable | Scheduled route window |
 
-### 6. `dropoff_location`
+### 7. `dropoff_location`
 
 Represents compost drop-off sites shown conceptually in the ERD and in the map experience.
 
@@ -100,6 +114,7 @@ Represents compost drop-off sites shown conceptually in the ERD and in the map e
 - One `region` can have many `user_account` records.
 - One `region` can have many `pickup_time` records.
 - One `user_account` can have many `rebate` records.
+- One `user_account` can have many `scheduled_pickup` records.
 - `dropoff_location` and `compost_truck_driver` are standalone in the current SQL, but they likely become route/service tables as the product expands.
 
 ## How This Maps To The Current Website
@@ -109,14 +124,15 @@ Represents compost drop-off sites shown conceptually in the ERD and in the map e
 - Sign up creates a row in `user_account`
 - Sign in reads from `user_account`
 - Profile displays values returned from `user_account`
+- Dashboard rebates read from `rebate`
+- Dashboard pickup scheduling reads from and writes to `scheduled_pickup`
 
 ### Currently frontend-only or placeholder
 
-- Dashboard schedule is hardcoded and not stored
-- Dashboard finance data is hardcoded and not stored in `rebate`
+- Dashboard expense data is hardcoded and not stored in the database
 - Map locations are hardcoded and not loaded from `dropoff_location`
 - Contact form submissions are not persisted
-- Profile settings toggles are not persisted
+- Weekly composting checklist progress is hardcoded in the dashboard
 
 ## Gaps Between The ERD And The Current Code
 
@@ -133,6 +149,5 @@ If the team wants the database to support the current UI more cleanly, the next 
 1. Add a real `region` table.
 2. Add `latitude` and `longitude` to `dropoff_location`.
 3. Connect signup to `region_id`.
-4. Replace static dashboard finance data with `rebate` queries.
+4. Replace static dashboard expense data with a dedicated database table.
 5. Replace static map markers with `dropoff_location` queries.
-

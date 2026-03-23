@@ -21,12 +21,18 @@ INSERT INTO rebate (account_id, compost_weight, rebate_amount) VALUES
 (1, 8.0, 1.60),
 (2, 25.0, 5.00);
 
--- 4. Populate compost_truck_driver
+-- 4. Populate scheduled_pickup
+INSERT INTO scheduled_pickup (account_id, pickup_date) VALUES
+(1, '2026-03-25'),
+(1, '2026-03-29'),
+(3, '2026-03-27');
+
+-- 5. Populate compost_truck_driver
 INSERT INTO compost_truck_driver (route_id, route_time) VALUES
 ('SLC-A', '08:00 AM'),
 ('PROVO-B', '12:30 PM');
 
--- 5. Populate dropoff_location
+-- 6. Populate dropoff_location
 INSERT INTO dropoff_location (address, route_time) VALUES
 ('Central Community Garden', '09:00 AM'),
 ('Northside Recycling Center', '14:00 PM');
