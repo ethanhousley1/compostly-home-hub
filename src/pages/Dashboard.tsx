@@ -171,6 +171,8 @@ const Dashboard = () => {
       <div className="container mx-auto px-4">
         <h1 className="font-display text-3xl font-bold mb-6">Dashboard</h1>
 
+        <br />
+
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="mb-6">
             <TabsTrigger value="schedule" className="gap-2">
@@ -183,69 +185,69 @@ const Dashboard = () => {
               <MapPin className="h-4 w-4" /> Map
             </TabsTrigger>
           </TabsList>
-        </Tabs>
 
-        <div className="flex flex-wrap gap-4 items-center">
-          <Link to="/pickup">
-            <Button variant="outline">Pickup Instructions</Button>
-          </Link>
+          <TabsContent value="schedule">
+            <div className="flex flex-wrap gap-4 items-center">
+              <Link to="/pickup">
+                <Button variant="outline">Pickup Instructions</Button>
+              </Link>
 
-          <Dialog open={isPickupOpen} onOpenChange={setIsPickupOpen}>
-            <DialogTrigger asChild>
-              <Button>Schedule Pickup</Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>Schedule a Pickup</DialogTitle>
-              </DialogHeader>
-              <div className="flex flex-col items-center space-y-4 py-4">
-                <Calendar
-                  mode="single"
-                  selected={pickupDate}
-                  onSelect={setPickupDate}
-                  disabled={(date) => {
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    return date < today;
-                  }}
-                  className="rounded-md border shadow"
-                />
-                <Button
-                  onClick={handleSchedulePickup}
-                  disabled={!pickupDate || isSchedulingPickup}
-                  className="w-full max-w-[280px]"
-                >
-                  {isSchedulingPickup ? "Saving..." : "Confirm Pickup Date"}
-                </Button>
+              <Dialog open={isPickupOpen} onOpenChange={setIsPickupOpen}>
+                <DialogTrigger asChild>
+                  <Button>Schedule Pickup</Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Schedule a Pickup</DialogTitle>
+                  </DialogHeader>
+                  <div className="flex flex-col items-center space-y-4 py-4">
+                    <Calendar
+                      mode="single"
+                      selected={pickupDate}
+                      onSelect={setPickupDate}
+                      disabled={(date) => {
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        return date < today;
+                      }}
+                      className="rounded-md border shadow"
+                    />
+                    <Button
+                      onClick={handleSchedulePickup}
+                      disabled={!pickupDate || isSchedulingPickup}
+                      className="w-full max-w-[280px]"
+                    >
+                      {isSchedulingPickup ? "Saving..." : "Confirm Pickup Date"}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+
+            {pickupsLoading && (
+              <div className="mt-6 p-5 rounded-xl border bg-card text-card-foreground shadow-sm animate-fade-in">
+                <p className="text-sm text-muted-foreground">Loading upcoming pickups...</p>
               </div>
-            </DialogContent>
-          </Dialog>
-        </div>
+            )}
 
-        {pickupsLoading && (
-          <div className="mt-6 p-5 rounded-xl border bg-card text-card-foreground shadow-sm animate-fade-in">
-            <p className="text-sm text-muted-foreground">Loading upcoming pickups...</p>
-          </div>
-        )}
+            {!pickupsLoading && scheduledPickups.length > 0 && (
+              <div className="mt-6 p-5 rounded-xl border bg-card text-card-foreground shadow-sm animate-fade-in">
+                <h3 className="font-semibold mb-3 flex items-center gap-2">
+                  <CalendarIcon className="h-5 w-5 text-primary" /> Upcoming Pickups
+                </h3>
+                <ul className="space-y-2 text-sm text-muted-foreground ml-7">
+                  {scheduledPickups.map((pickup) => (
+                    <li key={pickup.pickup_id} className="list-disc">
+                      {formatPickupDateLabel(pickup.pickup_date)}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-        {!pickupsLoading && scheduledPickups.length > 0 && (
-          <div className="mt-6 p-5 rounded-xl border bg-card text-card-foreground shadow-sm animate-fade-in">
-            <h3 className="font-semibold mb-3 flex items-center gap-2">
-              <CalendarIcon className="h-5 w-5 text-primary" /> Upcoming Pickups
-            </h3>
-            <ul className="space-y-2 text-sm text-muted-foreground ml-7">
-              {scheduledPickups.map((pickup) => (
-                <li key={pickup.pickup_id} className="list-disc">
-                  {formatPickupDateLabel(pickup.pickup_date)}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+          </TabsContent>
 
-        <br />
 
-        <Tabs>
 
           <TabsContent value="finances">
             <Card className="mb-6">
