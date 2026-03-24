@@ -171,6 +171,20 @@ const Dashboard = () => {
       <div className="container mx-auto px-4">
         <h1 className="font-display text-3xl font-bold mb-6">Dashboard</h1>
 
+        <Tabs value={tab} onValueChange={setTab}>
+          <TabsList className="mb-6">
+            <TabsTrigger value="schedule" className="gap-2">
+              <CalendarIcon className="h-4 w-4" /> Schedule
+            </TabsTrigger>
+            <TabsTrigger value="finances" className="gap-2">
+              <DollarSign className="h-4 w-4" /> Finances
+            </TabsTrigger>
+            <TabsTrigger value="map" className="gap-2">
+              <MapPin className="h-4 w-4" /> Map
+            </TabsTrigger>
+          </TabsList>
+        </Tabs>
+
         <div className="flex flex-wrap gap-4 items-center">
           <Link to="/pickup">
             <Button variant="outline">Pickup Instructions</Button>
@@ -230,46 +244,8 @@ const Dashboard = () => {
         )}
 
         <br />
-        <Tabs value={tab} onValueChange={setTab}>
-          <TabsList className="mb-6">
-            <TabsTrigger value="schedule" className="gap-2">
-              <CalendarIcon className="h-4 w-4" /> Schedule
-            </TabsTrigger>
-            <TabsTrigger value="finances" className="gap-2">
-              <DollarSign className="h-4 w-4" /> Finances
-            </TabsTrigger>
-            <TabsTrigger value="map" className="gap-2">
-              <MapPin className="h-4 w-4" /> Map
-            </TabsTrigger>
-          </TabsList>
 
-          <TabsContent value="schedule">
-            <Card>
-              <CardHeader>
-                <CardTitle>Weekly Composting Schedule</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {scheduleData.map((s) => (
-                    <div
-                      key={s.day}
-                      className="flex items-center gap-3 rounded-lg border p-3"
-                    >
-                      <input
-                        type="checkbox"
-                        defaultChecked={s.done}
-                        className="h-4 w-4 accent-primary"
-                      />
-                      <span className="font-medium min-w-[90px]">{s.day}</span>
-                      <span className="text-sm text-muted-foreground">
-                        {s.task}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+        <Tabs>
 
           <TabsContent value="finances">
             <Card className="mb-6">
