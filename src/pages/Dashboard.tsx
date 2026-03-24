@@ -23,16 +23,6 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 
-const scheduleData = [
-  { day: "Monday", task: "Add greens (fruit/veggie scraps)", done: true },
-  { day: "Tuesday", task: "Turn compost pile", done: false },
-  { day: "Wednesday", task: "Add browns (dry leaves, cardboard)", done: false },
-  { day: "Thursday", task: "Check moisture level", done: true },
-  { day: "Friday", task: "Add kitchen scraps", done: false },
-  { day: "Saturday", task: "Turn & aerate compost", done: false },
-  { day: "Sunday", task: "Rest day — let it decompose!", done: false },
-];
-
 const financeData = [
   { item: "Compost Bin", cost: 0, date: "Jan 2026" },
   { item: "Worm Kit", cost: 15, date: "Jan 2026" },
@@ -66,6 +56,7 @@ const sortScheduledPickups = (pickups: ScheduledPickup[]) =>
 const Dashboard = () => {
   const [tab, setTab] = useState("schedule");
   const { user } = useAuth();
+  const isPickupUser = user?.pickup_or_dropoff === "pickup";
   const [rebates, setRebates] = useState<Rebate[]>([]);
   const [rebateLoading, setRebateLoading] = useState(true);
   const [pickupDate, setPickupDate] = useState<Date | undefined>();
@@ -176,78 +167,105 @@ const Dashboard = () => {
         <Tabs value={tab} onValueChange={setTab}>
           <TabsList className="mb-6">
             <TabsTrigger value="schedule" className="gap-2">
-              <CalendarIcon className="h-4 w-4" /> Schedule
+              {isPickupUser ? (
+                <>
+                  <CalendarIcon className="h-4 w-4" /> Schedule
+                </>
+              ) : (
+                <>
+                  <MapPin className="h-4 w-4" /> Map
+                </>
+              )}
             </TabsTrigger>
             <TabsTrigger value="finances" className="gap-2">
               <DollarSign className="h-4 w-4" /> Finances
             </TabsTrigger>
-            <TabsTrigger value="map" className="gap-2">
-              <MapPin className="h-4 w-4" /> Map
-            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="schedule">
-            <div className="flex flex-wrap gap-4 items-center">
-              <Link to="/pickup">
-                <Button variant="outline">Pickup Instructions</Button>
-              </Link>
+        <TabsContent value="schedule">
+          {isPickupUser ? (
+            <>
+              <div className="flex flex-wrap gap-4 items-center">
+                <Link to="/pickup">
+                  <Button variant="outline">Pickup Instructions</Button>
+                </Link>
 
-              <Dialog open={isPickupOpen} onOpenChange={setIsPickupOpen}>
-                <DialogTrigger asChild>
-                  <Button>Schedule Pickup</Button>
-                </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
-                  <DialogHeader>
-                    <DialogTitle>Schedule a Pickup</DialogTitle>
-                  </DialogHeader>
-                  <div className="flex flex-col items-center space-y-4 py-4">
-                    <Calendar
-                      mode="single"
-                      selected={pickupDate}
-                      onSelect={setPickupDate}
-                      disabled={(date) => {
-                        const today = new Date();
-                        today.setHours(0, 0, 0, 0);
-                        return date < today;
-                      }}
-                      className="rounded-md border shadow"
-                    />
-                    <Button
-                      onClick={handleSchedulePickup}
-                      disabled={!pickupDate || isSchedulingPickup}
-                      className="w-full max-w-[280px]"
-                    >
-                      {isSchedulingPickup ? "Saving..." : "Confirm Pickup Date"}
-                    </Button>
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-
-            {pickupsLoading && (
-              <div className="mt-6 p-5 rounded-xl border bg-card text-card-foreground shadow-sm animate-fade-in">
-                <p className="text-sm text-muted-foreground">Loading upcoming pickups...</p>
+                <Dialog open={isPickupOpen} onOpenChange={setIsPickupOpen}>
+                  <DialogTrigger asChild>
+                    <Button>Schedule Pickup</Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Schedule a Pickup</DialogTitle>
+                    </DialogHeader>
+                    <div className="flex flex-col items-center space-y-4 py-4">
+                      <Calendar
+                        mode="single"
+                        selected={pickupDate}
+                        onSelect={setPickupDate}
+                        disabled={(date) => {
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          return date < today;
+                        }}
+                        className="rounded-md border shadow"
+                      />
+                      <Button
+                        onClick={handleSchedulePickup}
+                        disabled={!pickupDate || isSchedulingPickup}
+                        className="w-full max-w-[280px]"
+                      >
+                        {isSchedulingPickup ? "Saving..." : "Confirm Pickup Date"}
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
-            )}
 
-            {!pickupsLoading && scheduledPickups.length > 0 && (
-              <div className="mt-6 p-5 rounded-xl border bg-card text-card-foreground shadow-sm animate-fade-in">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <CalendarIcon className="h-5 w-5 text-primary" /> Upcoming Pickups
-                </h3>
-                <ul className="space-y-2 text-sm text-muted-foreground ml-7">
-                  {scheduledPickups.map((pickup) => (
-                    <li key={pickup.pickup_id} className="list-disc">
-                      {formatPickupDateLabel(pickup.pickup_date)}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+              {pickupsLoading && (
+                <div className="mt-6 p-5 rounded-xl border bg-card text-card-foreground shadow-sm">
+                  <p className="text-sm text-muted-foreground">
+                    Loading upcoming pickups...
+                  </p>
+                </div>
+              )}
 
-          </TabsContent>
+              {!pickupsLoading && scheduledPickups.length > 0 && (
+                <div className="mt-6 p-5 rounded-xl border bg-card text-card-foreground shadow-sm">
+                  <h3 className="font-semibold mb-3 flex items-center gap-2">
+                    <CalendarIcon className="h-5 w-5 text-primary" /> Upcoming Pickups
+                  </h3>
+                  <ul className="space-y-2 text-sm text-muted-foreground ml-7">
+                    {scheduledPickups.map((pickup) => (
+                      <li key={pickup.pickup_id} className="list-disc">
+                        {formatPickupDateLabel(pickup.pickup_date)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
-
+              {!pickupsLoading && scheduledPickups.length === 0 && (
+                <div className="mt-6 p-5 rounded-xl border bg-card text-card-foreground shadow-sm">
+                  <p className="text-sm text-muted-foreground">
+                    No pickups currently scheduled.
+                  </p>
+                </div>
+              )}
+            </>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>Community Composting Locations</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-[500px] rounded-lg overflow-hidden">
+                  <CompostMap />
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
 
           <TabsContent value="finances">
             <Card className="mb-6">
@@ -360,18 +378,6 @@ const Dashboard = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="map">
-            <Card>
-              <CardHeader>
-                <CardTitle>Community Composting Locations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[500px] rounded-lg overflow-hidden">
-                  <CompostMap />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
         </Tabs>
       </div>
     </div>
