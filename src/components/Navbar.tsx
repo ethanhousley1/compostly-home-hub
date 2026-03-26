@@ -10,8 +10,6 @@ const Navbar = () => {
   const { isLoggedIn, logout, user } = useAuth();
   const navigate = useNavigate();
 
-const isAdmin = isLoggedIn && user?.email?.toLowerCase() === "admin@compostly.com";
-
 const navLinks = [
   { label: "Home", to: "/" },
   ...(!isLoggedIn ? [{ label: "Sign Up", to: "/signup" }] : []),
@@ -19,12 +17,6 @@ const navLinks = [
   { label: "About Us", to: "/about" },
   { label: "FAQ", to: "/faq" },
   ...(isLoggedIn ? [{ label: "Profile", to: "/profile" }] : []),
-  ...(isAdmin
-    ? [
-        { label: "Users", to: "/users" },
-        { label: "Map", to: "/map" },
-      ]
-    : []),
 ];
 
   return (

@@ -57,6 +57,7 @@ const Dashboard = () => {
   const [tab, setTab] = useState("schedule");
   const { user } = useAuth();
   const isPickupUser = user?.pickup_or_dropoff === "Pickup";
+  const isAdmin = user?.email?.toLowerCase() === "admin@compostly.com";
   const [rebates, setRebates] = useState<Rebate[]>([]);
   const [rebateLoading, setRebateLoading] = useState(true);
   const [pickupDate, setPickupDate] = useState<Date | undefined>();
@@ -180,6 +181,23 @@ const Dashboard = () => {
             <TabsTrigger value="finances" className="gap-2">
               <DollarSign className="h-4 w-4" /> Finances
             </TabsTrigger>
+            {isAdmin && (
+              <>
+                <Link
+                  to="/users"
+                  className="inline-flex h-10 items-center justify-center rounded-md px-4 text-sm font-medium hover:bg-muted"
+                >
+                  Users
+                </Link>
+
+                <Link
+                  to="/map"
+                  className="inline-flex h-10 items-center justify-center rounded-md px-4 text-sm font-medium hover:bg-muted"
+                >
+                  Admin Map
+                </Link>
+              </>
+            )}
           </TabsList>
 
         <TabsContent value="schedule">
