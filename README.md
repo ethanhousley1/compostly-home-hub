@@ -104,6 +104,12 @@ For local dev with the legacy Express server, also set `PGPASSWORD` (and other P
 
 ## Deploying to Vercel
 
+### *IMPORTANT* 
+*New ENV varibale for prod: ALLOWED_ORIGIN*
+
+*It should be set as the url we are using for production on vercel, or http://localhost:8080 for dev.*
+
+
 Everything — the React app, the docs, and the API — ships from a **single Vercel project**.
 
 1. Push the repo to GitHub.
