@@ -320,8 +320,9 @@ const Users = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-8">
-      <AdminSubNav />
       <div className="mx-auto max-w-7xl">
+        <h1 className="font-display text-3xl font-bold mb-6">Dashboard</h1>
+        <AdminSubNav />
         <div className="mb-8 flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold tracking-tight text-gray-900">
