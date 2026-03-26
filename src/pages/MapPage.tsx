@@ -6,6 +6,7 @@ import { geocodeAddress, isCached } from "@/lib/geocode";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import EditUserDialog, { type UserRecord } from "@/components/EditUserDialog";
+import AdminSubNav from "@/components/AdminSubNav";
 
 interface UserWithCoords extends UserRecord {
   lat: number;
@@ -197,6 +198,8 @@ const MapPage = () => {
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl">
+        <AdminSubNav />
+        
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">
             User Map
