@@ -97,9 +97,12 @@ const EditUserDialog = ({
       return;
     }
 
-    if (form.pickupOrDropoff === "Pickup" && !form.address.trim()) {
-      setError("Address is required for pickup");
-      return;
+    if (form.pickupOrDropoff === "Pickup") {
+      const addrError = validateAddress(address, true);
+      if (addrError) {
+        setError(addrError);
+        return;
+      }
     }
 
     setIsSubmitting(true);
