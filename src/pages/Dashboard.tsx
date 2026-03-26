@@ -65,6 +65,7 @@ const Dashboard = () => {
   const [scheduledPickups, setScheduledPickups] = useState<ScheduledPickup[]>([]);
   const [pickupsLoading, setPickupsLoading] = useState(true);
   const [isSchedulingPickup, setIsSchedulingPickup] = useState(false);
+  const [deletingPickupId, setDeletingPickupId] = useState<number | null>(null);
 
   const handleSchedulePickup = async () => {
     if (!pickupDate || !user) return;
@@ -102,6 +103,30 @@ const Dashboard = () => {
       description: `Your pickup is scheduled for ${formatPickupDateLabel(pickupDateValue)}`,
     });
     setPickupDate(undefined);
+  };
+
+  const handleDeletePickup = async (pickupId: number) => {
+    setDeletingPickupId(pickupId);
+
+    const { error } = await supabase
+      .from("scheduled_pickup")
+      .delete()
+      .eq("pickup_id", pickupId);
+
+    setDeletingPickupId(null);
+
+    if (error) {
+      toast.error("Unable to delete pickup", {
+        description: "Please try again.",
+      });
+      return;
+    }
+
+    setScheduledPickups((prev) =>
+      prev.filter((pickup) => pickup.pickup_id !== pickupId)
+    );
+
+    toast.success("Pickup deleted");
   };
 
   useEffect(() => {
@@ -244,10 +269,22 @@ const Dashboard = () => {
                   <h3 className="font-semibold mb-3 flex items-center gap-2">
                     <CalendarIcon className="h-5 w-5 text-primary" /> Upcoming Pickups
                   </h3>
-                  <ul className="space-y-2 text-sm text-muted-foreground ml-7">
+                  <ul className="space-y-2 text-sm text-muted-foreground">
                     {scheduledPickups.map((pickup) => (
-                      <li key={pickup.pickup_id} className="list-disc">
-                        {formatPickupDateLabel(pickup.pickup_date)}
+                      <li
+                        key={pickup.pickup_id}
+                        className="flex items-center justify-between px-2 py-2"
+                      >
+                        <span>{formatPickupDateLabel(pickup.pickup_date)}</span>
+
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeletePickup(pickup.pickup_id)}
+                          disabled={deletingPickupId === pickup.pickup_id}
+                        >
+                          {deletingPickupId === pickup.pickup_id ? "Deleting..." : "Delete"}
+                        </Button>
                       </li>
                     ))}
                   </ul>
