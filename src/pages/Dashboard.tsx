@@ -181,24 +181,15 @@ const Dashboard = () => {
             <TabsTrigger value="finances" className="gap-2">
               <DollarSign className="h-4 w-4" /> Finances
             </TabsTrigger>
-            {isAdmin && (
-              <>
-                <Link
-                  to="/users"
-                  className="inline-flex h-10 items-center justify-center rounded-md px-4 text-sm font-medium hover:bg-muted"
-                >
-                  Users
-                </Link>
-
-                <Link
-                  to="/map"
-                  className="inline-flex h-10 items-center justify-center rounded-md px-4 text-sm font-medium hover:bg-muted"
-                >
-                  Admin Map
-                </Link>
-              </>
-            )}
           </TabsList>
+
+          {isAdmin && (
+            <div className="mb-6">
+              <Link to="/users">
+                <Button variant="outline">Admin Dashboard</Button>
+              </Link>
+            </div>
+          )}
 
         <TabsContent value="schedule">
           {isPickupUser ? (
