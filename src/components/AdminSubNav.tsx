@@ -11,10 +11,8 @@ const AdminSubNav = () => {
     }`;
 
   return (
-    <div className="mb-6 flex flex-wrap items-center justify-between gap-2">
-      
-      {/* LEFT SIDE: admin navigation */}
-      <div className="flex gap-2">
+    <div className="mb-6">
+      <div className="flex flex-wrap gap-2">
         <Link to="/users" className={linkClass("/users")}>
           Users
         </Link>
@@ -24,13 +22,14 @@ const AdminSubNav = () => {
         </Link>
       </div>
 
-      {/* RIGHT SIDE: back to user dashboard */}
-      <Link
-        to="/dashboard"
-        className="inline-flex h-10 items-center justify-center rounded-md border px-4 text-sm font-medium hover:bg-muted"
-      >
-        User Dashboard
-      </Link>
+      <div className="mt-3">
+        <Link
+          to="/dashboard"
+          className="inline-flex h-10 items-center justify-center rounded-md border px-4 text-sm font-medium hover:bg-muted"
+        >
+          User Dashboard
+        </Link>
+      </div>
     </div>
   );
 };

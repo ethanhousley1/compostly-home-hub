@@ -320,6 +320,7 @@ const Users = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-8">
+      <AdminSubNav />
       <div className="mx-auto max-w-7xl">
         <div className="mb-8 flex items-center justify-between">
           <div>
@@ -330,7 +331,7 @@ const Users = () => {
               Manage all users in the system
             </p>
           </div>
-          <AdminSubNav />
+          
           <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
             <DialogTrigger asChild>
               <Button onClick={() => resetForm()}>

@@ -197,6 +197,7 @@ const MapPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 lg:px-8">
+      <AdminSubNav />
       <div className="mx-auto max-w-7xl">
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">
@@ -207,7 +208,6 @@ const MapPage = () => {
             edit.
           </p>
         </div>
-        <AdminSubNav />
         <div className="relative overflow-hidden rounded-lg border border-gray-200 bg-white">
           {(loading || geocoding) && (
             <div className="absolute inset-0 z-[1000] flex items-center justify-center bg-white/80">
