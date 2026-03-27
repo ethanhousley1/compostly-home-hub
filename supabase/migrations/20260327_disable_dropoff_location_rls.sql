@@ -1,0 +1,2 @@
+ALTER TABLE public.dropoff_location
+DISABLE ROW LEVEL SECURITY;

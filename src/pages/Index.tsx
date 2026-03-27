@@ -1,14 +1,26 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, Leaf, Recycle, Sprout } from "lucide-react";
 import heroImage from "@/assets/hero-composting.jpg";
 import whatToCompostImage from "@/assets/what-to-compost.jpg";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 
 const Index = () => {
   const [email, setEmail] = useState("");
+  const { isLoggedIn } = useAuth();
+  const navigate = useNavigate();
+
+  const handleGetStarted = () => {
+    if (isLoggedIn) {
+      navigate("/dashboard");
+      toast.info("You are already subscribed");
+    } else {
+      navigate("/signup");
+    }
+  };
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -100,11 +112,9 @@ const Index = () => {
                 Access to guides, tips, composting tracker, rebate tracking, a
                 complimentary bin and more.
               </p>
-              <Link to="/signup">
-                <Button className="w-full gap-2">
+              <Button className="w-full gap-2" onClick={handleGetStarted}>
                   Get Started <ArrowRight className="h-4 w-4" />
                 </Button>
-              </Link>
             </div>
           </div>
         </div>

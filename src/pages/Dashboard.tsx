@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { format, parseISO } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,18 +8,45 @@ import {
   DollarSign,
   MapPin,
   Leaf,
+  Plus,
+  Edit2,
+  Trash2,
+  Loader2,
+  MapPinIcon,
 } from "lucide-react";
 import CompostMap from "@/components/CompostMap";
+import type { CompostLocation } from "@/components/CompostMap";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/lib/supabase";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 
@@ -66,6 +93,130 @@ const Dashboard = () => {
   const [pickupsLoading, setPickupsLoading] = useState(true);
   const [isSchedulingPickup, setIsSchedulingPickup] = useState(false);
   const [deletingPickupId, setDeletingPickupId] = useState<number | null>(null);
+
+  // --- Dropoff Locations state ---
+  const [locations, setLocations] = useState<CompostLocation[]>([]);
+  const [locationsLoading, setLocationsLoading] = useState(true);
+  const [isAddLocationOpen, setIsAddLocationOpen] = useState(false);
+  const [isEditLocationOpen, setIsEditLocationOpen] = useState(false);
+  const [isDeleteLocationOpen, setIsDeleteLocationOpen] = useState(false);
+  const [editingLocation, setEditingLocation] = useState<CompostLocation | null>(null);
+  const [locationForm, setLocationForm] = useState({ address: "" });
+  const [isLocationSubmitting, setIsLocationSubmitting] = useState(false);
+
+  const fetchLocations = useCallback(async () => {
+    setLocationsLoading(true);
+    try {
+      const { data, error } = await supabase
+        .from("dropoff_location")
+        .select("location_id, address")
+        .order("location_id", { ascending: true });
+
+      if (error) throw error;
+      setLocations(
+        (data || []).filter((l: { address: string | null }) => l.address?.trim()) as CompostLocation[],
+      );
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to fetch locations",
+      );
+    } finally {
+      setLocationsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchLocations();
+  }, [fetchLocations]);
+
+  const resetLocationForm = () => {
+    setLocationForm({ address: "" });
+    setEditingLocation(null);
+  };
+
+  const handleAddLocation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!locationForm.address.trim()) {
+      toast.error("Address is required");
+      return;
+    }
+    setIsLocationSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from("dropoff_location")
+        .insert({ address: locationForm.address.trim() });
+      if (error) throw error;
+      toast.success("Location added successfully");
+      setIsAddLocationOpen(false);
+      resetLocationForm();
+      fetchLocations();
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to add location",
+      );
+    } finally {
+      setIsLocationSubmitting(false);
+    }
+  };
+
+  const handleEditLocation = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingLocation || !locationForm.address.trim()) {
+      toast.error("Address is required");
+      return;
+    }
+    setIsLocationSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from("dropoff_location")
+        .update({ address: locationForm.address.trim() })
+        .eq("location_id", editingLocation.location_id);
+      if (error) throw error;
+      toast.success("Location updated successfully");
+      setIsEditLocationOpen(false);
+      resetLocationForm();
+      fetchLocations();
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to update location",
+      );
+    } finally {
+      setIsLocationSubmitting(false);
+    }
+  };
+
+  const handleDeleteLocation = async () => {
+    if (!editingLocation) return;
+    setIsLocationSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from("dropoff_location")
+        .delete()
+        .eq("location_id", editingLocation.location_id);
+      if (error) throw error;
+      toast.success("Location deleted successfully");
+      setIsDeleteLocationOpen(false);
+      resetLocationForm();
+      fetchLocations();
+    } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : "Failed to delete location",
+      );
+    } finally {
+      setIsLocationSubmitting(false);
+    }
+  };
+
+  const openEditLocation = (loc: CompostLocation) => {
+    setEditingLocation(loc);
+    setLocationForm({ address: loc.address });
+    setIsEditLocationOpen(true);
+  };
+
+  const openDeleteLocation = (loc: CompostLocation) => {
+    setEditingLocation(loc);
+    setIsDeleteLocationOpen(true);
+  };
 
   const handleSchedulePickup = async () => {
     if (!pickupDate || !user) return;
@@ -300,16 +451,224 @@ const Dashboard = () => {
               )}
             </>
           ) : (
-            <Card>
-              <CardHeader>
-                <CardTitle>Community Composting Locations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="h-[500px] rounded-lg overflow-hidden">
-                  <CompostMap />
-                </div>
-              </CardContent>
-            </Card>
+            <>
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>Community Composting Locations</CardTitle>
+                    {isAdmin && (
+                      <Dialog open={isAddLocationOpen} onOpenChange={setIsAddLocationOpen}>
+                        <DialogTrigger asChild>
+                          <Button size="sm" onClick={resetLocationForm}>
+                            <Plus className="mr-2 h-4 w-4" />
+                            Add Location
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-md">
+                          <DialogHeader>
+                            <DialogTitle>Add Composting Location</DialogTitle>
+                            <DialogDescription>
+                              Enter the full address for the new composting location.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <form onSubmit={handleAddLocation} className="space-y-4">
+                            <div>
+                              <Label htmlFor="add-loc-address">Address *</Label>
+                              <Input
+                                id="add-loc-address"
+                                value={locationForm.address}
+                                onChange={(e) =>
+                                  setLocationForm({ address: e.target.value })
+                                }
+                                placeholder="123 Main St, City, State 12345"
+                                required
+                              />
+                            </div>
+                            <div className="flex justify-end gap-2 pt-2">
+                              <Button
+                                type="button"
+                                variant="outline"
+                                onClick={() => setIsAddLocationOpen(false)}
+                                disabled={isLocationSubmitting}
+                              >
+                                Cancel
+                              </Button>
+                              <Button type="submit" disabled={isLocationSubmitting}>
+                                {isLocationSubmitting && (
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                )}
+                                Add Location
+                              </Button>
+                            </div>
+                          </form>
+                        </DialogContent>
+                      </Dialog>
+                    )}
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="relative overflow-hidden rounded-lg border border-gray-200 bg-white">
+                    {locationsLoading && (
+                      <div className="absolute inset-0 z-[1000] flex items-center justify-center bg-white/80">
+                        <div className="flex flex-col items-center gap-2">
+                          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                          <p className="text-sm font-medium text-gray-600">
+                            Loading locations…
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    <div className="h-[500px]">
+                      <CompostMap locations={locations} />
+                    </div>
+                  </div>
+
+                  {!locationsLoading && locations.length === 0 && (
+                    <p className="mt-4 text-center text-sm text-gray-500">
+                      No composting locations available yet.
+                    </p>
+                  )}
+
+                  {!locationsLoading && locations.length > 0 && (
+                    <p className="mt-4 text-center text-sm text-gray-500">
+                      Showing {locations.length} composting location{locations.length !== 1 ? "s" : ""}
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Locations List */}
+              {!locationsLoading && locations.length > 0 && (
+                <Card className="mt-6">
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <MapPinIcon className="h-5 w-5 text-primary" />
+                      All Locations
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Address</TableHead>
+                            {isAdmin && (
+                              <TableHead className="text-right">Actions</TableHead>
+                            )}
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {locations.map((loc) => (
+                            <TableRow key={loc.location_id}>
+                              <TableCell className="font-medium">
+                                {loc.address}
+                              </TableCell>
+                              {isAdmin && (
+                                <TableCell className="text-right">
+                                  <div className="flex justify-end gap-2">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => openEditLocation(loc)}
+                                    >
+                                      <Edit2 className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="text-red-600 hover:text-red-800"
+                                      onClick={() => openDeleteLocation(loc)}
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                </TableCell>
+                              )}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Edit Location Dialog */}
+              <Dialog open={isEditLocationOpen} onOpenChange={setIsEditLocationOpen}>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Edit Composting Location</DialogTitle>
+                    <DialogDescription>
+                      Update the address for this composting location.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleEditLocation} className="space-y-4">
+                    <div>
+                      <Label htmlFor="edit-loc-address">Address *</Label>
+                      <Input
+                        id="edit-loc-address"
+                        value={locationForm.address}
+                        onChange={(e) =>
+                          setLocationForm({ address: e.target.value })
+                        }
+                        placeholder="123 Main St, City, State 12345"
+                        required
+                      />
+                    </div>
+                    <div className="flex justify-end gap-2 pt-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => setIsEditLocationOpen(false)}
+                        disabled={isLocationSubmitting}
+                      >
+                        Cancel
+                      </Button>
+                      <Button type="submit" disabled={isLocationSubmitting}>
+                        {isLocationSubmitting && (
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        )}
+                        Save Changes
+                      </Button>
+                    </div>
+                  </form>
+                </DialogContent>
+              </Dialog>
+
+              {/* Delete Location Dialog */}
+              <AlertDialog
+                open={isDeleteLocationOpen}
+                onOpenChange={setIsDeleteLocationOpen}
+              >
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Location</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete the location at{" "}
+                      <span className="font-semibold">
+                        {editingLocation?.address}
+                      </span>
+                      ? This action cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel disabled={isLocationSubmitting}>
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleDeleteLocation}
+                      disabled={isLocationSubmitting}
+                      className="bg-red-600 hover:bg-red-700"
+                    >
+                      {isLocationSubmitting && (
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
           )}
         </TabsContent>
 
