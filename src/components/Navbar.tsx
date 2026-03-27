@@ -12,7 +12,6 @@ const Navbar = () => {
 
 const navLinks = [
   { label: "Home", to: "/" },
-  ...(!isLoggedIn ? [{ label: "Sign Up", to: "/signup" }] : []),
   ...(isLoggedIn ? [{ label: "Dashboard", to: "/dashboard" }] : []),
   { label: "About Us", to: "/about" },
   { label: "FAQ", to: "/faq" },
@@ -27,7 +26,17 @@ const navLinks = [
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden items-center gap-1 md:flex">
+        <div className="hidden items-center md:flex">
+          {!isLoggedIn && (
+            <div className="flex items-center">
+              <Button asChild className="bg-[#3D5A40] text-white hover:bg-[#3D5A40]/90 mr-4">
+                <Link to="/signup">
+                  Sign Up
+                </Link>
+              </Button>
+              <span className="text-muted-foreground mr-4">|</span>
+            </div>
+          )}
           {navLinks.map((link) => (
             <Link
               key={link.to}
@@ -70,6 +79,15 @@ const navLinks = [
       {isOpen && (
         <div className="border-t bg-card md:hidden animate-fade-in">
           <div className="container mx-auto flex flex-col gap-1 px-4 py-3">
+            {!isLoggedIn && (
+              <Link
+                to="/signup"
+                onClick={() => setIsOpen(false)}
+                className="rounded-md px-3 py-2 text-sm font-medium bg-[#3D5A40] text-white hover:bg-[#3D5A40]/90 mb-2 w-max"
+              >
+                Sign Up
+              </Link>
+            )}
             {navLinks.map((link) => (
               <Link
                 key={link.to}

@@ -3,11 +3,13 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import Navbar from "./Navbar";
 
+import { useAuth } from "@/context/AuthContext";
+
 vi.mock("@/context/AuthContext", () => ({
-  useAuth: () => ({}),
+  useAuth: vi.fn(),
 }));
 
-const mockUseAuth = vi.mocked((await import("@/context/AuthContext")).useAuth);
+const mockUseAuth = vi.mocked(useAuth);
 
 function renderNavbar(isLoggedIn: boolean) {
   mockUseAuth.mockReturnValue({
