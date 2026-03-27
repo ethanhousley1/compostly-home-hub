@@ -7,6 +7,7 @@ import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import EditUserDialog, { type UserRecord } from "@/components/EditUserDialog";
 import { addressToDisplayString } from "@/components/AddressFields";
+import AdminSubNav from "@/components/AdminSubNav";
 
 interface UserWithCoords extends UserRecord {
   lat: number;
