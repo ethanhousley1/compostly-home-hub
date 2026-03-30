@@ -45,7 +45,7 @@ interface EditUserDialogProps {
 
 const normalizeServiceType = (value: string | null | undefined) => {
   if (!value) return "";
-  const normalized = value.toLowerCase();
+  const normalized = value.trim().toLowerCase();
   if (normalized === "pickup") return "Pickup";
   if (normalized === "dropoff") return "Dropoff";
   return "";
@@ -70,24 +70,24 @@ const EditUserDialog = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (user && open) {
-      setForm({
-        firstName: user.first_name,
-        lastName: user.last_name,
-        email: user.email,
-        pickupOrDropoff: normalizeServiceType(user.pickup_or_dropoff),
-        emailNotifications: user.email_notifications,
-        weeklyReminders: user.weekly_reminders,
-      });
-      setAddress({
-        street_address: user.street_address || "",
-        city: user.city || "",
-        state: user.state || "",
-        zip_code: user.zip_code || "",
-      });
-      setError("");
-    }
-  }, [user, open]);
+    if (!user || !open) return;
+
+    setForm({
+      firstName: user.first_name,
+      lastName: user.last_name,
+      email: user.email,
+      pickupOrDropoff: normalizeServiceType(user.pickup_or_dropoff),
+      emailNotifications: user.email_notifications,
+      weeklyReminders: user.weekly_reminders,
+    });
+    setAddress({
+      street_address: user.street_address || "",
+      city: user.city || "",
+      state: user.state || "",
+      zip_code: user.zip_code || "",
+    });
+    setError("");
+  }, [open, user?.user_id]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
