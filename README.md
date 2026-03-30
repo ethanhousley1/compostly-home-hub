@@ -15,7 +15,6 @@ Frontend:
 Backend:
 
 - Supabase PostgreSQL (data storage — accessed via the Supabase JS client from the browser)
-- Vercel Serverless Functions in `api/` (legacy — not used by the active signup/login flow)
 
 > **Note:** Supabase Auth is **not** used. All authentication is handled by querying the `user_account` table directly. Passwords are stored and compared in plaintext via the Supabase JS client. The session is persisted in `localStorage`.
 
@@ -56,15 +55,8 @@ npm install
 **Option A — Supabase (recommended)**
 
 1. Create a Supabase project at https://supabase.com.
-2. In the Supabase SQL Editor, paste and run the contents of `supabase/schema.sql` (or `db/schema.sql`).
+2. In the Supabase SQL Editor, paste and run the contents of `supabase/migrations/0_schema.sql`.
 3. If you are migrating an existing database, run the migration in `supabase/migrations/` instead.
-4. (Optional) Run `db/seed.sql` for sample data.
-
-**Option B — Local PostgreSQL (for development)**
-
-- Create a database named `compostly` (e.g. `createdb compostly`).
-- Run the schema: `psql -d compostly -f db/schema.sql`
-- Run the seed: `psql -d compostly -f db/seed.sql`
 
 ### Step 4: Environment
 
@@ -110,7 +102,7 @@ For local dev with the legacy Express server, also set `PGPASSWORD` (and other P
 *It should be set as the url we are using for production on vercel, or http://localhost:8080 for dev.*
 
 
-Everything — the React app, the docs, and the API — ships from a **single Vercel project**.
+Everything ships from a **single Vercel project**.
 
 1. Push the repo to GitHub.
 2. Import the project in [Vercel](https://vercel.com).
@@ -118,24 +110,12 @@ Everything — the React app, the docs, and the API — ships from a **single Ve
    - `VITE_SUPABASE_URL` — your Supabase project URL
    - `VITE_SUPABASE_ANON_KEY` — your Supabase anon/public key
 4. Set the build command to `npm run build` and the output directory to `dist`.
-5. `npm run build` runs the unified build script (`scripts/build.mjs`) which:
-   - Builds the Vite SPA → `dist/`
-   - Installs docs dependencies (if needed) and builds the Astro docs → `dist/docs/`
-6. `vercel.json` handles SPA rewrites so React Router deep links work, while docs and API routes are served directly.
-
-Note: The `api/` directory still deploys as serverless functions, but the active signup/login/profile flow uses the Supabase JS client to query the `user_account` table directly from the browser.
-
-| Path     | What it serves                |
-| -------- | ----------------------------- |
-| `/`      | React SPA                     |
-| `/docs`  | Astro/Starlight documentation |
-| `/api/*` | Serverless functions          |
-
-To run the docs locally: `cd docs && npm install && npm run dev`.
+5. `npm run build` runs the build script (`scripts/build.mjs`) which builds the Vite SPA → `dist/`.
+6. `vercel.json` handles SPA rewrites so React Router deep links work.
 
 ## Database
 
-Core user data lives in `user_account`, and persisted dashboard pickup dates live in `scheduled_pickup`. The full schema is in `db/schema.sql` and `supabase/schema.sql`.
+Core user data lives in `user_account`, and persisted dashboard pickup dates live in `scheduled_pickup`. The full schema is in `supabase/migrations/0_schema.sql`.
 
 Key columns on `user_account`:
 | Column | Type | Notes |
@@ -166,7 +146,7 @@ Migrations are tracked in `supabase/migrations/`.
 2. **Confirm the UI:** You should be redirected to the thank-you page and see "Welcome, [First Name]!"
 3. **Confirm the database:** In the Supabase dashboard, go to **Table Editor → user_account** and verify the new row appears with the correct email, name, and preferences.
 4. **Confirm persistence:** Refresh the page — the session should persist via localStorage. Sign out and sign back in to verify login works.
-5. **Confirm network:** In browser DevTools → Network, verify that signup/login requests go to your Supabase URL (`*.supabase.co`) as database queries, not to `/api/signup`.
+5. **Confirm network:** In browser DevTools → Network, verify that signup/login requests go to your Supabase URL (`*.supabase.co`) as database queries.
 
 ## EARS Requirements
 
@@ -174,7 +154,7 @@ Migrations are tracked in `supabase/migrations/`.
 
 - When a user clicks 'Create Account' with valid details, the system shall create a new user in the `user_account` table and redirect to the thank-you page.
 - While the user is logged in, the system shall persist the session across page refreshes using localStorage.
-- The system shall support a unified build process that ships the React SPA, Astro docs, and serverless functions from a single Vercel project.
+- The system shall support a unified build process that ships the React SPA from a single Vercel project.
 - The system shall provide a composting education page.
 - The system shall provide an 'About Us' page.
 - The system shall clarify on the Homepage that users are signing up for a subscription service.

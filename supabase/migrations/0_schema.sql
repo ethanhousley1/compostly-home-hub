@@ -1,5 +1,4 @@
 -- Compostly full database schema
--- This file mirrors db/schema.sql and represents the current state of the database.
 
 -- Sequences
 CREATE SEQUENCE IF NOT EXISTS compost_truck_driver_employee_id_seq;
